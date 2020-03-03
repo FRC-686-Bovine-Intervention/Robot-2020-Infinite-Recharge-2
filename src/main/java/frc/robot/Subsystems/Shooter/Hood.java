@@ -20,13 +20,13 @@ public class Hood {
 
 
     private static final double kF = 0.0;
-    private static final double kI = 10.2;
+    private static final double kI = 0.0;
     private static final double kD = 0.0;
-    private static final double kP = 32.0;
+    private static final double kP = 0.2;
 
     private static final double encoderUnitsPerRev = 104424;
 
-    private static final int tolerance = Utility.radiansToEncoderUnits(0.025, encoderUnitsPerRev);
+    private static final int tolerance = 50;
     private static final int cruiseVelocity = Utility.rpsToUPF(1, encoderUnitsPerRev);
     private static final int maxAcceleration = Utility.rpsToUPF(0, 100);
 
@@ -40,7 +40,8 @@ public class Hood {
         hoodMotor.configFactoryDefault();
         hoodMotor.setInverted(true);
         hoodMotor.setSensorPhase(false);
-        hoodMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTalonTimeoutMs);
+        hoodMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Constants.kTalonPidIdx, Constants.kTalonTimeoutMs);
+        hoodMotor.setSelectedSensorPosition(0, Constants.kTalonPidIdx, Constants.kTalonTimeoutMs);
 
         hoodMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General,      (int)(1000 * Constants.kLoopDt), Constants.kTalonTimeoutMs);
 		hoodMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0,    (int)(1000 * Constants.kLoopDt), Constants.kTalonTimeoutMs);
