@@ -27,9 +27,9 @@ public class ShooterMaster {
 
 
     //Physical Variables =====================================
-    private static final double targetHeight = 99;
-    private static final double cameraHeight = 41;
-    private static final double cameraAngleElevation = 25;
+    private static final double targetHeight = 0;//99;
+    private static final double cameraHeight = 0; //41;
+    private static final double cameraAngleElevation = 0;//25;
 
 
 
@@ -68,15 +68,15 @@ public class ShooterMaster {
 
     private boolean turretCalibrated, hoodCalibrated, allCalibrated = false;
     private int successfulHoodLoops = 0;
-    private static final int requiredHoodLoops = 10;
-    private static final double hoodCalibTolerance = 0.1;
+    private static final int requiredHoodLoops = 30;
+    private static final double hoodCalibTolerance = 0.15;
     private double hoodLastPos = 0;
 
 
 
     //Search variables
     private double sweepStartTime = 0;
-    private static final double sweepPeriod = 3;
+    private static final double sweepPeriod = 1.75;
     private static final double sweepRange = Math.PI/2.0;
     private boolean sweepFirstRun = true;
 
@@ -172,6 +172,7 @@ public class ShooterMaster {
                     turretCalibrated = true;
                     turret.zeroWithInit(-3);
                 }
+                System.out.print(Math.abs(hood.getSensedPos()-hoodLastPos));
 
                 if(Math.abs(hood.getSensedPos()-hoodLastPos) <= hoodCalibTolerance && !hoodCalibrated){
                     successfulHoodLoops++;
@@ -203,6 +204,9 @@ public class ShooterMaster {
                 double position = Math.sin((elapsedTime/sweepPeriod)*Math.PI)*sweepRange;
                 System.out.println("Position: "+ position);
                 turret.setPosition(position);
+
+                flywheel.setRPS(0.0);
+                hood.setPosition(0.0);
                 break;
 
 
@@ -219,7 +223,7 @@ public class ShooterMaster {
 
                 double cHorizRad = limelight.getTargetHorizontalAngleRad();
                 double cTurretPos = turret.getSensedPosition();
-                turret.setPosition(cTurretPos +cHorizRad);
+                turret.setPosition(cTurretPos +cHorizRad/2.0);
 
                 int keyRPS = getLinear(targetDisplacement, dataTable);
                 double nominalSpeed = handleLinear(targetDisplacement, dataTable[keyRPS][0], dataTable[keyRPS+1][0], dataTable[keyRPS][1], dataTable[keyRPS+1][1]);
@@ -229,7 +233,7 @@ public class ShooterMaster {
 
 
                 flywheel.setRPS(nominalSpeed * 0.016666);
-                turret.setPosition(Math.toRadians(nominalPosition));
+                hood.setPosition(nominalPosition);
                 break;
 
 

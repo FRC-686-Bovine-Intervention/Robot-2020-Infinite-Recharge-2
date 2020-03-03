@@ -19,13 +19,13 @@ public class Turret {
     private TalonSRX turretMotor;
 
     private static final double kF = 0.0;
-    private static final double kP = 5.0;  
+    private static final double kP = 0.8;  
     private static final double kI = 0.0;
-    private static final double kD = 150.0; 
+    private static final double kD = 0.0; 
 
     private static final double encoderUnitsPerRev = 49050;
 
-    private static final int tolerance = Utility.radiansToEncoderUnits(0.075, encoderUnitsPerRev);
+    private static final int tolerance = 20;
     private static final int cruiseVelocity = Utility.rpsToUPF(1, encoderUnitsPerRev);
     private static final int maxAcceleration = Utility.rpspsToUPFPF(1, encoderUnitsPerRev);
 
