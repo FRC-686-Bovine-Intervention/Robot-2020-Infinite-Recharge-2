@@ -20,15 +20,15 @@ public class Flywheel {
     TalonFX flywheelMaster, flywheelSlave;
 
 
-    private static final double kF = 0.03072071;
-    private static final double kP = 0.25;
+    private static final double kF = 0.0497;
+    private static final double kP = 0.32;
     private static final double kI = 0.0;
-    private static final double kD = 24.0;
+    private static final double kD = 48.0;
 
     private static final double encoderUnitsPerRev = 1540;
 
-    private static final int tolerance = Utility.rpsToUPF(10, encoderUnitsPerRev);
-    private static final double accelerationTime = 3; //secs
+    private static final int tolerance = Utility.rpsToUPF(0, encoderUnitsPerRev);
+    private static final double accelerationTime = 2; //secs
 
 
     private double targetRPS = 0;
@@ -44,7 +44,6 @@ public class Flywheel {
 
         flywheelMaster.configFactoryDefault();
         flywheelMaster.setInverted(true);
-        flywheelMaster.setSensorPhase(false);
         flywheelMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 1, Constants.kTalonTimeoutMs);
 
         flywheelMaster.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General,      (int)(1000 * Constants.kLoopDt), Constants.kTalonTimeoutMs);
