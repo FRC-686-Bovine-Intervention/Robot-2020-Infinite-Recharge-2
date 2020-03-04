@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.ControlStructures.Subsystem;
 import frc.robot.Controls.Controls;
@@ -57,11 +58,14 @@ public class ConveyorBelt extends Subsystem {
         vBeltRight.configFactoryDefault();
 
         towerMaster.setInverted(true);
-        towerSlave.setInverted(true);
+        towerSlave.setInverted(false);
         vBeltLeft.setInverted(true);
         vBeltRight.setInverted(true);
 
         towerSlave.follow(towerMaster);
+
+        SmartDashboard.putBoolean("Conveyorbelt/Debug", false);
+        SmartDashboard.putNumber("Conveyorbelt/Debug/SetTowerPercent", 0);
     }
 
 
@@ -72,38 +76,41 @@ public class ConveyorBelt extends Subsystem {
 
     @Override
     public void run(){
-        if(shootEdge.update(controls.getBoolean(DriverControlsEnum.SHOOT))){
-            reverseTower();
-            reverseVBelt();
-            reverseStartTime = Timer.getFPGATimestamp();
-        }
+        if(SmartDashboard.getBoolean("Conveyorbelt/Debug", false)){
+            if(shootEdge.update(controls.getBoolean(DriverControlsEnum.SHOOT))){
+                reverseTower();
+                reverseVBelt();
+                reverseStartTime = Timer.getFPGATimestamp();
+            }
 
-        if(controls.getBoolean(DriverControlsEnum.SHOOT)){
-            if(shooterChecked){
-                turnOnTower();
-                turnOnVBelt();
+            if(controls.getBoolean(DriverControlsEnum.SHOOT)){
+                if(shooterChecked){
+                    turnOnTower();
+                    turnOnVBelt();
+                } else {
+                    shooterChecked = Flywheel.getInstance().nearTarget();
+                    if(Timer.getFPGATimestamp()-reverseStartTime >= reverseTime){
+                        stopTower();
+                        stopVBelt();
+                    }
+                }
             } else {
-                shooterChecked = Flywheel.getInstance().nearTarget();
-                if(Timer.getFPGATimestamp()-reverseStartTime >= reverseTime){
+                shooterChecked = false;
+                if(exitSensor.get() && storageCount < 3){
+                    turnOnVBelt();
+                    if(!entranceSensor.get()){
+                        turnOnTower();
+                    } else {
+                        stopTower();
+                    }
+                } else {
                     stopTower();
                     stopVBelt();
                 }
             }
         } else {
-            shooterChecked = false;
-            if(exitSensor.get() && storageCount < 3){
-                turnOnVBelt();
-                if(!entranceSensor.get()){
-                    turnOnTower();
-                } else {
-                    stopTower();
-                }
-            } else {
-                stopTower();
-                stopVBelt();
-            }
+            towerMaster.set(ControlMode.PercentOutput, SmartDashboard.getNumber("Conveyorbelt/Debug/SetTowerPercent", 0));
         }
-
     }
 
     @Override

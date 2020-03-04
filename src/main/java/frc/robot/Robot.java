@@ -2,7 +2,11 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.ControlStructures.SubsystemController;
+import frc.robot.Subsystems.ConveyorBelt;
 import frc.robot.Subsystems.Drivetrain;
+import frc.robot.Subsystems.Intake;
+import frc.robot.Subsystems.Kickers;
+import frc.robot.Subsystems.Lift;
 import frc.robot.Subsystems.Shooter.ShooterMaster;
 
 public class Robot extends TimedRobot { 
@@ -12,11 +16,11 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     subsystemController.addSubsystem(Drivetrain.getInstance());
-    // subsystemController.addSubsystem(ShooterMaster.getInstance());
-    // subsystemController.addSubsystem(ConveyorBelt.getInstance());
-    // subsystemController.addSubsystem(Intake.getInstance());
-    // subsystemController.addSubsystem(Kickers.getInstance());
-    // subsystemController.addSubsystem(Lift.getInstance());
+    subsystemController.addSubsystem(ShooterMaster.getInstance());
+    subsystemController.addSubsystem(ConveyorBelt.getInstance());
+    subsystemController.addSubsystem(Intake.getInstance());
+    subsystemController.addSubsystem(Kickers.getInstance());
+    subsystemController.addSubsystem(Lift.getInstance());
 
     subsystemController.init();
   }

@@ -5,6 +5,7 @@ import frc.robot.Constants;
 import frc.robot.ControlStructures.AdvancedSubsystem;
 import frc.robot.Controls.Controls;
 import frc.robot.Controls.DriverControlsEnum;
+import frc.robot.Subsystems.Shooter.Utility;
 import frc.robot.util.RisingEdgeDetector;
 
 public class Lift extends AdvancedSubsystem{
@@ -35,6 +36,11 @@ public class Lift extends AdvancedSubsystem{
     private RisingEdgeDetector ptoEdge = new RisingEdgeDetector();
 
 
+    private boolean calibrationComplete = false;
+    private double driveLastPos = 100000;
+    private static final double calibrationTolerance = Math.toRadians(2); //Radians
+
+
     public Lift(){
         controls = Controls.getInstance();
 
@@ -50,19 +56,19 @@ public class Lift extends AdvancedSubsystem{
 
     @Override
     public void run(){
-        if(ptoEdge.update(controls.getBoolean(DriverControlsEnum.TOGGLE_PTO))){
-            if(ptoState == PTOStates.DRIVE_ENABLED){
-                shiftToLift();
-            } else {
-                shiftToDrive();
-            }
-        }
+        // if(ptoEdge.update(controls.getBoolean(DriverControlsEnum.TOGGLE_PTO))){
+        //     if(ptoState == PTOStates.DRIVE_ENABLED){
+        //         shiftToLift();
+        //     } else {
+        //         shiftToDrive();
+        //     }
+        // }
 
-        if(controls.getBoolean(DriverControlsEnum.LOCK_LIFT)){
-            lockLift();
-        } else if(controls.getBoolean(DriverControlsEnum.UNLOCK_LIFT)){
-            unlockLift();
-        }
+        // if(controls.getBoolean(DriverControlsEnum.LOCK_LIFT)){
+        //     lockLift();
+        // } else if(controls.getBoolean(DriverControlsEnum.UNLOCK_LIFT)){
+        //     unlockLift();
+        // }
     }
 
     @Override

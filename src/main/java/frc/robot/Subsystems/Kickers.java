@@ -3,6 +3,7 @@ package frc.robot.Subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.ControlStructures.Subsystem;
 import frc.robot.Controls.Controls;
@@ -40,6 +41,9 @@ public class Kickers extends Subsystem{
         kickerSlave.setInverted(false);
 
         kickerSlave.follow(kickerMaster);
+
+        SmartDashboard.putBoolean("Kickers/Debug", false);
+        SmartDashboard.putNumber("Kickers/Debug/SetPercent", 0);
     }
 
     @Override
@@ -47,11 +51,15 @@ public class Kickers extends Subsystem{
 
     @Override
     public void run(){
-        if(shootRise.update(controls.getBoolean(DriverControlsEnum.SHOOT))){
-            kickerMaster.set(ControlMode.PercentOutput, Constants.kKickerShootPercent);
-        }
-        if(shootFall.update(controls.getBoolean(DriverControlsEnum.SHOOT))){
-            kickerMaster.set(ControlMode.PercentOutput, 0.0);
+        if(SmartDashboard.getBoolean("Kicker/Debug", false)){
+            if(shootRise.update(controls.getBoolean(DriverControlsEnum.SHOOT))){
+                kickerMaster.set(ControlMode.PercentOutput, Constants.kKickerShootPercent);
+            }
+            if(shootFall.update(controls.getBoolean(DriverControlsEnum.SHOOT))){
+                kickerMaster.set(ControlMode.PercentOutput, 0.0);
+            }
+        } else {
+            kickerMaster.set(ControlMode.PercentOutput, SmartDashboard.getNumber("Kickers/Debug/SetPercent", 0));
         }
     }
 

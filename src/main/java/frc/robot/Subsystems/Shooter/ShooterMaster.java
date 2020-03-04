@@ -28,9 +28,9 @@ public class ShooterMaster extends AdvancedSubsystem {
 
 
     //Physical Variables =====================================
-    private static final double targetHeight = 12;//99;
-    private static final double cameraHeight = 0; //41;
-    private static final double cameraAngleElevation = 25;//25;
+    private static final double targetHeight = 99;
+    private static final double cameraHeight = 41;
+    private static final double cameraAngleElevation = 23;//25;
 
 
 
@@ -51,27 +51,24 @@ public class ShooterMaster extends AdvancedSubsystem {
         }
     }
 
-    private static final int iCalibrate = 1, iSearch =2, iShoot = 3, iIdle = 4;
+    private static final int iCalibrate = 1, iSearch =2, iShoot = 3, iIdle = 4, iDebug = 5;
 
-    Decision Calibrate = new Decision(iCalibrate, 1);
-    Decision Search = new Decision(iSearch, 2);
-    Decision Shoot = new Decision(iShoot,3);
-    Decision Idle = new Decision(iIdle, 4);
+    Decision debug = new Decision(iDebug, 1);
+    Decision calibrate = new Decision(iCalibrate, 2);
+    Decision search = new Decision(iSearch, 3);
+    Decision shoot = new Decision(iShoot, 4);
+    Decision idle = new Decision(iIdle, 5);
 
-    Decision[] options = {Calibrate, Search, Shoot, Idle};
+    Decision[] options = {calibrate, search, shoot, idle, debug};
 
-    private Decision cDecision = Idle;
+    private Decision cDecision = idle;
     
 
 
     private int failedLoops = 0;
     private static final int maxFailedLoops = 3;
 
-    private boolean turretCalibrated, hoodCalibrated, allCalibrated = false;
-    private int successfulHoodLoops = 0;
-    private static final int requiredHoodLoops = 30;
-    private static final double hoodCalibTolerance = 0.15;
-    private double hoodLastPos = 0;
+    private boolean allCalibrated = false;
 
 
 
@@ -111,6 +108,12 @@ public class ShooterMaster extends AdvancedSubsystem {
 
         limelight = Limelight.getInstance();
         limelight.setLEDMode(LedMode.kOff);
+
+        SmartDashboard.putBoolean("Shooter/Debug", false);
+        SmartDashboard.putNumber("Shooter/Debug/HoodPosition", 0);
+        SmartDashboard.putNumber("Shooter/Debug/TurretPosition", 0);
+        SmartDashboard.putNumber("Shooter/Debug/FlywheelRPS", 0);
+        SmartDashboard.putBoolean("Shooter/Debug/Limelight", false);
     }
 
     
@@ -135,19 +138,22 @@ public class ShooterMaster extends AdvancedSubsystem {
         }
 
         //Check conditions for each:
-        if((cDecision.id == Calibrate.id && !allCalibrated) || controls.getBoolean(DriverControlsEnum.CALIBRATE)){
-            Calibrate.vote();
+        if((cDecision.id == calibrate.id && !allCalibrated) || controls.getBoolean(DriverControlsEnum.CALIBRATE)){
+            calibrate.vote();
         }
         if(failedLoops >= maxFailedLoops){
-            Search.vote();
+            search.vote();
         }
         if(controls.getBoolean(DriverControlsEnum.SHOOT)){
-            Shoot.vote();
+            shoot.vote();
+        }
+        if(SmartDashboard.getBoolean("Shooter/Debug", false)){
+            debug.vote();
         }
 
 
         //Default:
-        Idle.vote();
+        idle.vote();
 
         //Choose:
         Decision bestOption = null;
@@ -160,7 +166,7 @@ public class ShooterMaster extends AdvancedSubsystem {
                 }
             }
         }
-        if(cDecision.id != Search.id && bestOption.id == Search.id){
+        if(cDecision.id != search.id && bestOption.id == search.id){
             sweepFirstRun = true;
         }
         cDecision = bestOption;
@@ -168,8 +174,21 @@ public class ShooterMaster extends AdvancedSubsystem {
 
         //Behavior:
         switch(cDecision.id){
+            case iDebug:
+                if(SmartDashboard.getBoolean("Shooter/Debug/Limelight", false)){
+                    limelight.setLEDMode(LedMode.kOn);
+                } else {
+                    limelight.setLEDMode(LedMode.kOff);
+                }
+                hood.setPosition(Math.toRadians(SmartDashboard.getNumber("Shooter/Debug/HoodPosition", 0)));
+                turret.setPosition(Math.toRadians(SmartDashboard.getNumber("Shooter/Debug/TurretPosition", 0)));
+                flywheel.setRPS(SmartDashboard.getNumber("Shooter/Debug/FlywheelRPS", 0)/9.549);
+
+                break;
+
             case iCalibrate:
                 limelight.setLEDMode(LedMode.kOff);
+
                
                 break;
 
@@ -177,6 +196,7 @@ public class ShooterMaster extends AdvancedSubsystem {
 
             case iSearch:
                 limelight.setLEDMode(LedMode.kOn);
+
                 if(sweepFirstRun){
                     sweepStartTime = Timer.getFPGATimestamp();
                     sweepFirstRun = false;
@@ -212,9 +232,8 @@ public class ShooterMaster extends AdvancedSubsystem {
                 double nominalPosition = handleLinear(targetDisplacement, dataTable[keyHood][0], dataTable[keyHood+1][0], dataTable[keyHood][1], dataTable[keyHood+1][1]);
 
 
-                System.out.println(nominalSpeed);
-                flywheel.setRPS(20);
-                //flywheel.setRPS(nominalSpeed * 0.016666*0.5);
+                //flywheel.setRPS(20);
+                flywheel.setRPS(nominalSpeed * 0.105);
                 hood.setPosition(Math.toRadians(nominalPosition));
                 //flywheel.setRPS(0);
                 //hood.setPosition(0);
@@ -237,8 +256,10 @@ public class ShooterMaster extends AdvancedSubsystem {
 
     @Override
     public void updateSmartDashboard() {
+        SmartDashboard.putNumber("Shooter/TargetDist", getTargetDisplacement());
         SmartDashboard.putNumber("Shooter/TurretSensedPos", turret.getSensedPosition());
         SmartDashboard.putNumber("Shooter/HoodSensedPos", hood.getSensedPosition());
+        SmartDashboard.putNumber("Shooter/FlywheelSensedRPS", flywheel.getSensedRPS());
     }
 
 

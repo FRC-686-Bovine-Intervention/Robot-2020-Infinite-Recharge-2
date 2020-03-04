@@ -72,7 +72,7 @@ public class Constants {
 
     public static double kConveyorFeedPercent = 0.5;
     public static double kConveyorBackUpPercent = 0.5;
-    public static double kKickerShootPercent = 0.75;
+    public static double kKickerShootPercent = 1.0;
 
     public static double kConveyorBackupDist = 3;
 
