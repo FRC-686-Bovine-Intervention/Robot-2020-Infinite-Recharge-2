@@ -11,8 +11,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-    //subsystemController.addSubsystem(Drivetrain.getInstance());
-    subsystemController.addSubsystem(ShooterMaster.getInstance());
+    subsystemController.addSubsystem(Drivetrain.getInstance());
+    // subsystemController.addSubsystem(ShooterMaster.getInstance());
     // subsystemController.addSubsystem(ConveyorBelt.getInstance());
     // subsystemController.addSubsystem(Intake.getInstance());
     // subsystemController.addSubsystem(Kickers.getInstance());

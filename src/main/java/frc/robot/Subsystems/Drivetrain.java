@@ -114,14 +114,14 @@ public class Drivetrain extends Subsystem{
 
     @Override
     public void run(){
-        double leftPower, rightPower;
-        if(Lift.getInstance().getPTOState() == PTOStates.DRIVE_ENABLED){
-            leftPower = (controls.getYAxis() +controls.getXAxis())/2.0;
-            rightPower = (controls.getYAxis()-controls.getXAxis())/2.0;
-        } else {
-            leftPower = rightPower = 0;
-        }
-        setPower(leftPower, rightPower);
+        // double leftPower, rightPower;
+        // if(Lift.getInstance().getPTOState() == PTOStates.DRIVE_ENABLED){
+        //     leftPower = (controls.getYAxis() +controls.getXAxis())/2.0;
+        //     rightPower = (controls.getYAxis()-controls.getXAxis())/2.0;
+        // } else {
+        //     leftPower = rightPower = 0;
+        // }
+        // setPower(leftPower, rightPower);
     }
 
     @Override
@@ -153,6 +153,15 @@ public class Drivetrain extends Subsystem{
         rightMaster.set(ControlMode.Velocity, rightVel);
     }
 
+
+
+
+    // public LinearAngularSpeed getLinearAngularSpeed(){
+    //     WheelSpeed wheelSpeed = getSensedVelocity();
+
+
+    // }
+
     public WheelSpeed getSensedVelocity(){
         return new WheelSpeed(getSensedLeftVelocity(), getSensedRightVelocity());
     }
@@ -175,6 +184,16 @@ public class Drivetrain extends Subsystem{
             this.leftSpeed = leftSpeed;
             this.rightSpeed = rightSpeed;
         }
+    }
+
+    class LinearAngularSpeed {
+        double linearSpeed, angularSpeed;
+        public LinearAngularSpeed(){}
+        public LinearAngularSpeed(double linearSpeed, double angularSpeed){
+            this.linearSpeed = linearSpeed;
+            this.angularSpeed = angularSpeed;
+        }
+
     }
 
 
