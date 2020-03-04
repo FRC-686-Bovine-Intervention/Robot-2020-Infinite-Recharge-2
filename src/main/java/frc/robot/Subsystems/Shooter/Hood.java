@@ -34,6 +34,15 @@ public class Hood {
 
 
 
+    //Calibration variables:
+    private boolean calibrationComplete = false;
+    private double hoodLastPos = 10000;
+    private static final double hoodCalibTolerance = Math.toRadians(2);
+    private double successfulHoodLoops = 0;
+    private static final double requiredHoodLoops = 20;
+
+
+
 
     public Hood(){
         hoodMotor = new TalonSRX(Constants.kShooterHoodID);
@@ -73,7 +82,7 @@ public class Hood {
 
 
 
-    public double getSensedPos(){
+    public double getSensedPosition(){
         return Utility.encoderUnitsToRadians(hoodMotor.getSelectedSensorPosition(), encoderUnitsPerRev);
     }
 
@@ -81,6 +90,35 @@ public class Hood {
 
     public void zeroSensor(){
         hoodMotor.setSelectedSensorPosition(0, 0, Constants.kTalonTimeoutMs);
+    }
+
+
+
+
+    public void calibrateStart(){
+        calibrationComplete = false;
+        successfulHoodLoops = 0;
+        hoodLastPos = 10000;
+    }
+
+    public void calibrate(){
+        if(Math.abs(getSensedPosition()-hoodLastPos) <= hoodCalibTolerance){
+            successfulHoodLoops++;
+        } else {
+            successfulHoodLoops = 0;
+        }
+        hoodLastPos = getSensedPosition();
+        if(successfulHoodLoops < requiredHoodLoops){
+            setPercent(-0.1825);
+        } else {
+            setPercent(0.0);
+            zeroSensor();
+            calibrationComplete = true;
+        }
+    }
+
+    public boolean calibrationFinished(){
+        return calibrationComplete;
     }
 
 

@@ -4,12 +4,13 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import frc.robot.Constants;
+import frc.robot.ControlStructures.Subsystem;
 import frc.robot.Controls.Controls;
 import frc.robot.Controls.DriverControlsEnum;
 import frc.robot.util.FallingEdgeDetector;
 import frc.robot.util.RisingEdgeDetector;
 
-public class Kickers{
+public class Kickers extends Subsystem{
     private static Kickers instance = null;
     public static Kickers getInstance(){
         if(instance == null){
@@ -41,8 +42,10 @@ public class Kickers{
         kickerSlave.follow(kickerMaster);
     }
 
-    public void start(){}
+    @Override
+    public void init(){}
 
+    @Override
     public void run(){
         if(shootRise.update(controls.getBoolean(DriverControlsEnum.SHOOT))){
             kickerMaster.set(ControlMode.PercentOutput, Constants.kKickerShootPercent);
@@ -52,9 +55,18 @@ public class Kickers{
         }
     }
 
+    @Override
+    public void zeroSensors() {
+
+    }
+
+    @Override
+    public void updateSmartDashboard() {
+
+    }
+
 
     public void setPercent(double percent){
         kickerMaster.set(ControlMode.PercentOutput,percent);
     }
-
 }

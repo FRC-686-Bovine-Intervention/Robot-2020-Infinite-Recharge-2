@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
 
 public class Turret {
@@ -17,6 +18,7 @@ public class Turret {
     }
 
     private TalonSRX turretMotor;
+    private DigitalInput hallEffect;
 
     private static final double kF = 0.0;
     private static final double kP = 0.8;  
@@ -32,8 +34,13 @@ public class Turret {
     private static final double limits[] = {-(Math.PI), (Math.PI)};
 
 
+
+    private boolean calibrationComplete = false;
+
+
     public Turret(){
         turretMotor = new TalonSRX(Constants.kShooterTurretID);
+        hallEffect = new DigitalInput(Constants.kTurretHallEffectChannel);
 
         turretMotor.configFactoryDefault();
         turretMotor.setInverted(true);
@@ -62,7 +69,6 @@ public class Turret {
 
 
     public void setPosition(double radians){
-        System.out.println(radians);
         radians = Utility.bound(radians, limits);
         turretMotor.set(ControlMode.Position, Utility.radiansToEncoderUnits(radians, encoderUnitsPerRev));
     }
@@ -79,5 +85,27 @@ public class Turret {
 
     public void zeroWithInit(double radians){
         turretMotor.setSelectedSensorPosition(Utility.radiansToEncoderUnits(radians, encoderUnitsPerRev), 0, Constants.kTalonPidIdx);
+    }
+
+
+
+    public void calibrateStart(){
+        calibrationComplete = false;
+        
+    }
+
+    public void calibrate(){
+        if(hallEffect.get()){
+            setPercent(-0.1825);
+        } else {
+            setPercent(0.0);
+            zeroWithInit(-3);
+            calibrationComplete = true;
+        }
+
+    }
+
+    public boolean calibrationFinished(){
+        return calibrationComplete;
     }
 }

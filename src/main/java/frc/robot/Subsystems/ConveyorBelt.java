@@ -7,12 +7,13 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
+import frc.robot.ControlStructures.Subsystem;
 import frc.robot.Controls.Controls;
 import frc.robot.Controls.DriverControlsEnum;
 import frc.robot.Subsystems.Shooter.Flywheel;
 import frc.robot.util.RisingEdgeDetector;
 
-public class ConveyorBelt {
+public class ConveyorBelt extends Subsystem {
     private static ConveyorBelt instance = null;
         public static ConveyorBelt getInstance(){
         if(instance == null){
@@ -64,10 +65,12 @@ public class ConveyorBelt {
     }
 
 
-    public void start(){}
+    @Override
+    public void init() {
 
+    }
 
-
+    @Override
     public void run(){
         if(shootEdge.update(controls.getBoolean(DriverControlsEnum.SHOOT))){
             reverseTower();
@@ -100,6 +103,16 @@ public class ConveyorBelt {
                 stopVBelt();
             }
         }
+
+    }
+
+    @Override
+    public void zeroSensors() {
+
+    }
+
+    @Override
+    public void updateSmartDashboard() {
 
     }
 

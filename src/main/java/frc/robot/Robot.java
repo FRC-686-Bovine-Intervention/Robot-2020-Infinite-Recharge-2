@@ -1,57 +1,45 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.TimedRobot;
-import frc.robot.Subsystems.ConveyorBelt;
+import frc.robot.ControlStructures.SubsystemController;
 import frc.robot.Subsystems.Drivetrain;
-import frc.robot.Subsystems.Intake;
-import frc.robot.Subsystems.Kickers;
-import frc.robot.Subsystems.Lift;
 import frc.robot.Subsystems.Shooter.ShooterMaster;
-import frc.robot.Subsystems.Shooter.Turret;
 
-
-public class Robot extends TimedRobot {
-  // Drivetrain drivetrain;
-  // Lift lift;
-  // Intake intake;
-  // ConveyorBelt conveyorBelt;
-  // Kickers kickers;
-  ShooterMaster shooter;  
-
-
-  double startTime = 0;
+public class Robot extends TimedRobot { 
+  SubsystemController subsystemController = new SubsystemController();
   
-
-
 
   @Override
   public void robotInit() {
-    // drivetrain    = Drivetrain.getInstance();
-    // lift          = Lift.getInstance();
-    // intake        = Intake.getInstance();
-    // conveyorBelt  = ConveyorBelt.getInstance();
-    // kickers       = Kickers.getInstance();
-    shooter       = ShooterMaster.getInstance();
-    
-    // drivetrain.start();
-    // lift.start();       
-    // intake.start();
-    // conveyorBelt.start();
-    // kickers.start();  
-    shooter.start();
+    //subsystemController.addSubsystem(Drivetrain.getInstance());
+    subsystemController.addSubsystem(ShooterMaster.getInstance());
+    // subsystemController.addSubsystem(ConveyorBelt.getInstance());
+    // subsystemController.addSubsystem(Intake.getInstance());
+    // subsystemController.addSubsystem(Kickers.getInstance());
+    // subsystemController.addSubsystem(Lift.getInstance());
+
+    subsystemController.init();
   }
 
   @Override
-  public void robotPeriodic() {     
+  public void robotPeriodic() {   
+    subsystemController.onLoop();
   }
 
   @Override
   public void autonomousInit() {
+    subsystemController.resetForCalibration();
   }
 
   @Override
   public void autonomousPeriodic() {
+    subsystemController.updateSmartDashboard(); 
+
+    if(!subsystemController.calibrationComplete()){
+      subsystemController.runCalibration();
+    } else {
+
+    }
   }
 
   @Override
@@ -61,12 +49,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    // drivetrain.run();
-    // lift.run();       
-    // intake.run();
-    // conveyorBelt.run();
-    // kickers.run();  
-    shooter.run();
+    subsystemController.onTeleLoop();
+    subsystemController.updateSmartDashboard(); 
   }
 
 

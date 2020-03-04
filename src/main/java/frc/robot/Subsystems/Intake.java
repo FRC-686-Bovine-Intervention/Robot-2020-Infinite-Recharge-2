@@ -6,10 +6,11 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import frc.robot.Constants;
+import frc.robot.ControlStructures.Subsystem;
 import frc.robot.Controls.Controls;
 import frc.robot.Controls.DriverControlsEnum;
 
-public class Intake {
+public class Intake extends Subsystem{
     private static Intake instance = null;
     public static Intake getInstance(){
         if(instance == null){
@@ -36,14 +37,26 @@ public class Intake {
     }
 
 
-    public void start(){}
+    @Override
+    public void init(){}
 
+    @Override
     public void run(){
         if(controls.getBoolean(DriverControlsEnum.INTAKE)){
             deploy();
         } else {
             retract();
         }
+    }
+
+    @Override
+    public void zeroSensors() {
+
+    }
+
+    @Override
+    public void updateSmartDashboard() {
+
     }
 
 
@@ -65,10 +78,5 @@ public class Intake {
         mainSolenoids.set(Value.kForward);
         secondarySolenoids.set(Value.kForward);
     }
-
-
-
-
-
 
 }
