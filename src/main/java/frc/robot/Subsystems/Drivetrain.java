@@ -152,4 +152,30 @@ public class Drivetrain extends Subsystem{
         leftMaster.set(ControlMode.Velocity, leftVel);
         rightMaster.set(ControlMode.Velocity, rightVel);
     }
+
+    public WheelSpeed getSensedVelocity(){
+        return new WheelSpeed(getSensedLeftVelocity(), getSensedRightVelocity());
+    }
+
+    public double getSensedLeftVelocity(){
+        return (wheelDiameter/2.0)*Utility.upfToRPS(leftMaster.getSelectedSensorVelocity(), encoderUnitsPerRevLeft);
+    }
+
+    public double getSensedRightVelocity(){
+        return (wheelDiameter/2.0)*Utility.upfToRPS(rightMaster.getSelectedSensorVelocity(), encoderUnitsPerRevRight);
+    }
+
+
+
+
+
+    class WheelSpeed {
+        double leftSpeed, rightSpeed;
+        public WheelSpeed(double leftSpeed, double rightSpeed){
+            this.leftSpeed = leftSpeed;
+            this.rightSpeed = rightSpeed;
+        }
+    }
+
+
 }

@@ -83,6 +83,11 @@ public class Constants {
 
 
 
+    public static double kWheelDiameter = 6.0; //inches
+    public static double kDrivetrainWidth = 30.0; //inches
+
+
+
 
 
     //Encoder stuff
