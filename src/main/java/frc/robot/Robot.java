@@ -21,18 +21,16 @@ import frc.robot.Subsystems.Intake;
 import frc.robot.Subsystems.Kickers;
 import frc.robot.Subsystems.Lift;
 import frc.robot.Subsystems.Shooter.ShooterMaster;
+import frc.robot.Subsystems.Shooter.Turret;
 
 
 public class Robot extends TimedRobot {
-  Drivetrain drivetrain;
-  Lift lift;
-  Intake intake;
-  ConveyorBelt conveyorBelt;
-  Kickers kickers;
-  ShooterMaster shooter;
-
-  DigitalInput hallEffect;
-  
+  // Drivetrain drivetrain;
+  // Lift lift;
+  // Intake intake;
+  // ConveyorBelt conveyorBelt;
+  // Kickers kickers;
+  ShooterMaster shooter;  
 
 
   double startTime = 0;
@@ -42,18 +40,18 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-    drivetrain    = Drivetrain.getInstance();
-    lift          = Lift.getInstance();
-    intake        = Intake.getInstance();
-    conveyorBelt  = ConveyorBelt.getInstance();
-    kickers       = Kickers.getInstance();
+    // drivetrain    = Drivetrain.getInstance();
+    // lift          = Lift.getInstance();
+    // intake        = Intake.getInstance();
+    // conveyorBelt  = ConveyorBelt.getInstance();
+    // kickers       = Kickers.getInstance();
     shooter       = ShooterMaster.getInstance();
     
-    drivetrain.start();
-    lift.start();       
-    intake.start();
-    conveyorBelt.start();
-    kickers.start();  
+    // drivetrain.start();
+    // lift.start();       
+    // intake.start();
+    // conveyorBelt.start();
+    // kickers.start();  
     shooter.start();
   }
 
@@ -76,11 +74,11 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    drivetrain.run();
-    lift.run();       
-    intake.run();
-    conveyorBelt.run();
-    kickers.run();  
+    // drivetrain.run();
+    // lift.run();       
+    // intake.run();
+    // conveyorBelt.run();
+    // kickers.run();  
     shooter.run();
   }
 
