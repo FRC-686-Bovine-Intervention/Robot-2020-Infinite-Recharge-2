@@ -24,6 +24,7 @@ public class Constants {
     public static double kDriveWatchdogTimerThreshold = 0.500;
     public static int kTalonTimeoutMs = 5; // ms
     public static int kTalonPidIdx = 0; // 0 for non-cascaded PIDs, 1 for cascaded PIDs
+    public static int kTalonFXPidIdx = 1; // 0 for non-cascaded PIDs, 1 for cascaded PIDs
     public static double kTalonLoopPeriodSec = 0.1;
         
     public static double kNominalBatteryVoltage = 12.0;

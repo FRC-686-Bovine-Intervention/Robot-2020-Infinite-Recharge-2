@@ -2,13 +2,14 @@ package frc.robot.Subsystems.Shooter;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.Constants;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.ControlStructures.AdvancedSubsystem;
 import frc.robot.Controls.Controls;
 import frc.robot.Controls.DriverControlsEnum;
 import frc.robot.Subsystems.Shooter.Limelight.LedMode;
 import frc.robot.util.Vector2d;
 
-public class ShooterMaster {
+public class ShooterMaster extends AdvancedSubsystem {
     private static ShooterMaster instance = null;
     public static ShooterMaster getInstance(){
         if(instance == null){
@@ -27,9 +28,9 @@ public class ShooterMaster {
 
 
     //Physical Variables =====================================
-    private static final double targetHeight = 0;//99;
+    private static final double targetHeight = 12;//99;
     private static final double cameraHeight = 0; //41;
-    private static final double cameraAngleElevation = 0;//25;
+    private static final double cameraAngleElevation = 25;//25;
 
 
 
@@ -97,6 +98,10 @@ public class ShooterMaster {
 
 
 
+    private boolean calibrationComplete = false;
+
+
+
     
     public ShooterMaster(){
         controls = Controls.getInstance();
@@ -104,16 +109,18 @@ public class ShooterMaster {
         hood = Hood.getInstance();
         turret = Turret.getInstance();
 
-        hallEffect = new DigitalInput(Constants.kTurretHallEffectChannel);
         limelight = Limelight.getInstance();
         limelight.setLEDMode(LedMode.kOff);
     }
 
+    
 
+    @Override
+    public void init() {
 
-    public void start(){}
+    }
 
-
+    @Override
     public void run(){
         if(!limelight.getIsTargetFound() && (controls.getBoolean(DriverControlsEnum.SHOOT))){
             failedLoops++;
@@ -138,7 +145,6 @@ public class ShooterMaster {
             Shoot.vote();
         }
 
-        System.out.println("Loops: " + failedLoops);
 
         //Default:
         Idle.vote();
@@ -158,38 +164,13 @@ public class ShooterMaster {
             sweepFirstRun = true;
         }
         cDecision = bestOption;
-        System.out.println("Id: " + cDecision.id);
 
 
         //Behavior:
         switch(cDecision.id){
             case iCalibrate:
                 limelight.setLEDMode(LedMode.kOff);
-                if(hallEffect.get() && !turretCalibrated){
-                    turret.setPercent(-0.1825);
-                } else {
-                    turret.setPercent(0.0);
-                    turretCalibrated = true;
-                    turret.zeroWithInit(-3);
-                }
-                System.out.print(Math.abs(hood.getSensedPos()-hoodLastPos));
-
-                if(Math.abs(hood.getSensedPos()-hoodLastPos) <= hoodCalibTolerance && !hoodCalibrated){
-                    successfulHoodLoops++;
-                } else {
-                    successfulHoodLoops = 0;
-                }
-                if(!hoodCalibrated && successfulHoodLoops < requiredHoodLoops){
-                    hood.setPercent(-0.1825);
-                } else {
-                    hood.setPercent(0.0);
-                    hood.zeroSensor();
-                    hoodCalibrated = true;
-                }
-
-                if(hoodCalibrated && turretCalibrated){
-                    allCalibrated = true;
-                }
+               
                 break;
 
 
@@ -202,7 +183,6 @@ public class ShooterMaster {
                 }
                 double elapsedTime = Timer.getFPGATimestamp()-sweepStartTime;
                 double position = Math.sin((elapsedTime/sweepPeriod)*Math.PI)*sweepRange;
-                System.out.println("Position: "+ position);
                 turret.setPosition(position);
 
                 flywheel.setRPS(0.0);
@@ -232,8 +212,12 @@ public class ShooterMaster {
                 double nominalPosition = handleLinear(targetDisplacement, dataTable[keyHood][0], dataTable[keyHood+1][0], dataTable[keyHood][1], dataTable[keyHood+1][1]);
 
 
-                flywheel.setRPS(nominalSpeed * 0.016666);
-                hood.setPosition(nominalPosition);
+                System.out.println(nominalSpeed);
+                flywheel.setRPS(20);
+                //flywheel.setRPS(nominalSpeed * 0.016666*0.5);
+                hood.setPosition(Math.toRadians(nominalPosition));
+                //flywheel.setRPS(0);
+                //hood.setPosition(0);
                 break;
 
 
@@ -247,6 +231,40 @@ public class ShooterMaster {
         }
     }
 
+    @Override
+    public void zeroSensors() {
+    }
+
+    @Override
+    public void updateSmartDashboard() {
+        SmartDashboard.putNumber("Shooter/TurretSensedPos", turret.getSensedPosition());
+        SmartDashboard.putNumber("Shooter/HoodSensedPos", hood.getSensedPosition());
+    }
+
+
+
+
+    @Override
+    public void calibrateInit() {
+        calibrationComplete = false;
+        hood.calibrateStart();
+        turret.calibrateStart();
+    }
+
+    @Override
+    public void calibrateLoop() {
+        hood.calibrate();
+        turret.calibrate();
+
+        if(hood.calibrationFinished() && turret.calibrationFinished()){
+            calibrationComplete = true;
+        }
+    }
+
+    @Override
+    public boolean calibrateFinished() {
+        return calibrationComplete;
+    }
     
 
 

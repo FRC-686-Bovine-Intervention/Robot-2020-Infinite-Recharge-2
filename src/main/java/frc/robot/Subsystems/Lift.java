@@ -2,11 +2,12 @@ package frc.robot.Subsystems;
 
 import edu.wpi.first.wpilibj.Solenoid;
 import frc.robot.Constants;
+import frc.robot.ControlStructures.AdvancedSubsystem;
 import frc.robot.Controls.Controls;
 import frc.robot.Controls.DriverControlsEnum;
 import frc.robot.util.RisingEdgeDetector;
 
-public class Lift {
+public class Lift extends AdvancedSubsystem{
     private static Lift instance = null;
     public static Lift getInstance(){
         if(instance == null){
@@ -20,12 +21,12 @@ public class Lift {
 
     private Solenoid ptoSolenoids, lockSolenoids; 
 
-    public enum ptoStates {
+    public enum PTOStates {
         DRIVE_ENABLED,
         LIFT_ENABLED;
     }
 
-    public ptoStates ptoState = ptoStates.DRIVE_ENABLED; 
+    public PTOStates ptoState = PTOStates.DRIVE_ENABLED; 
 
 
     private boolean driveVal = false;
@@ -42,14 +43,15 @@ public class Lift {
     }
 
 
-
-    public void start(){
+    @Override
+    public void init(){
         shiftToDrive();
     }
 
+    @Override
     public void run(){
         if(ptoEdge.update(controls.getBoolean(DriverControlsEnum.TOGGLE_PTO))){
-            if(ptoState == ptoStates.DRIVE_ENABLED){
+            if(ptoState == PTOStates.DRIVE_ENABLED){
                 shiftToLift();
             } else {
                 shiftToDrive();
@@ -63,6 +65,34 @@ public class Lift {
         }
     }
 
+    @Override
+    public void zeroSensors() {
+
+    }
+
+    @Override
+    public void updateSmartDashboard() {
+
+    }
+
+    
+
+    @Override
+    public void calibrateInit() {
+
+    }
+
+    @Override
+    public void calibrateLoop() {
+
+    }
+
+    @Override
+    public boolean calibrateFinished() {
+        return false;
+    }
+
+
 
 
     public void lockLift(){
@@ -75,12 +105,16 @@ public class Lift {
 
     public void shiftToDrive(){
         ptoSolenoids.set(driveVal);
-        ptoState = ptoStates.DRIVE_ENABLED;
+        ptoState = PTOStates.DRIVE_ENABLED;
         lockLift();
     }
     public void shiftToLift(){
         ptoSolenoids.set(!driveVal);
-        ptoState = ptoStates.LIFT_ENABLED;
+        ptoState = PTOStates.LIFT_ENABLED;
         unlockLift();
     }
+
+    public PTOStates getPTOState(){
+        return ptoState;
+    } 
 }
