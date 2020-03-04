@@ -1,7 +1,5 @@
 package frc.robot.Subsystems;
 
-import java.util.ResourceBundle.Control;
-
 import edu.wpi.first.wpilibj.Solenoid;
 import frc.robot.Constants;
 import frc.robot.Controls.Controls;
