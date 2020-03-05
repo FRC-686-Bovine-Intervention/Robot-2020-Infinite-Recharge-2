@@ -32,7 +32,7 @@ public class Flywheel {
 
 
     private double targetRPS = 0;
-    private static final double rpsTolerance = 20;
+    private static final double rpsTolerance = 10;
 
 
     public Flywheel(){
@@ -60,6 +60,8 @@ public class Flywheel {
         flywheelMaster.configAllowableClosedloopError(Constants.kSlotIdxPos, tolerance, Constants.kTalonTimeoutMs);
 
         flywheelMaster.configClosedloopRamp(accelerationTime);
+        flywheelMaster.configVoltageCompSaturation(11, Constants.kTalonTimeoutMs);
+        flywheelMaster.enableVoltageCompensation(true);
 
 
         flywheelSlave.follow(flywheelMaster);
