@@ -1,6 +1,9 @@
 package frc.robot.Subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.ControlStructures.AdvancedSubsystem;
 import frc.robot.Controls.Controls;
@@ -37,8 +40,8 @@ public class Lift extends AdvancedSubsystem{
 
 
     private boolean calibrationComplete = false;
-    private double driveLastPos = 100000;
-    private static final double calibrationTolerance = Math.toRadians(2); //Radians
+    private boolean leftCalibrated = false, rightCalibrated = false;
+    private static final double calibrationTolerance = 0.1; //Rads/sec
 
 
     public Lift(){
@@ -46,6 +49,10 @@ public class Lift extends AdvancedSubsystem{
 
         ptoSolenoids = new Solenoid(Constants.kPCMID, Constants.kPTOSolenoidChannel);
         lockSolenoids = new Solenoid(Constants.kPCMID, Constants.kLiftLockSolenoidChannel);
+
+        SmartDashboard.putBoolean("Lift/Debug", false);
+        SmartDashboard.putBoolean("Lift/Debug/LockSolenoids", false);
+        SmartDashboard.putBoolean("Lift/Debug/PTOSolenoids", false);
     }
 
 
@@ -56,19 +63,26 @@ public class Lift extends AdvancedSubsystem{
 
     @Override
     public void run(){
-        // if(ptoEdge.update(controls.getBoolean(DriverControlsEnum.TOGGLE_PTO))){
-        //     if(ptoState == PTOStates.DRIVE_ENABLED){
-        //         shiftToLift();
-        //     } else {
-        //         shiftToDrive();
-        //     }
-        // }
+        if(!SmartDashboard.getBoolean("Lift/Debug", false)){
+            if(ptoEdge.update(controls.getBoolean(DriverControlsEnum.TOGGLE_PTO))){
+                if(ptoState == PTOStates.DRIVE_ENABLED){
+                    shiftToLift();
+                } else {
+                    shiftToDrive();
+                }
+            }
 
-        // if(controls.getBoolean(DriverControlsEnum.LOCK_LIFT)){
-        //     lockLift();
-        // } else if(controls.getBoolean(DriverControlsEnum.UNLOCK_LIFT)){
-        //     unlockLift();
-        // }
+            if(controls.getBoolean(DriverControlsEnum.LOCK_LIFT)){
+                lockLift();
+                shiftToDrive();
+            } else if(controls.getBoolean(DriverControlsEnum.UNLOCK_LIFT)){
+                unlockLift();
+            }
+        } else {
+            //Debug stuff
+            lockSolenoids.set(SmartDashboard.getBoolean("Lift/Debug/LockSolenoids", false));
+            ptoSolenoids.set(SmartDashboard.getBoolean("Lift/Debug/PTOSolenoids", false));
+        }
     }
 
     @Override
@@ -85,17 +99,37 @@ public class Lift extends AdvancedSubsystem{
 
     @Override
     public void calibrateInit() {
-
+        leftCalibrated = false;
+        rightCalibrated = false;
+        calibrationComplete = false;
+        unlockLift();
+        shiftToLift();
+        Drivetrain.getInstance().leftMaster.set(ControlMode.PercentOutput, -0.125);
+        Drivetrain.getInstance().rightMaster.set(ControlMode.PercentOutput, -0.125);
     }
 
     @Override
     public void calibrateLoop() {
+        if(!leftCalibrated && Drivetrain.getInstance().getSensedRPSLeft() <= calibrationTolerance){
+            leftCalibrated = true;
+            Drivetrain.getInstance().leftMaster.set(ControlMode.Velocity, 0.0);
+        }
 
+        if(!rightCalibrated && Drivetrain.getInstance().getSensedRPSRight() <= calibrationTolerance){
+            rightCalibrated = true;
+            Drivetrain.getInstance().rightMaster.set(ControlMode.Velocity, 0.0);
+        }
+
+        if(leftCalibrated && rightCalibrated){
+            calibrationComplete = true;
+            lockLift();
+            shiftToDrive();
+        }
     }
 
     @Override
     public boolean calibrateFinished() {
-        return false;
+        return calibrationComplete;
     }
 
 

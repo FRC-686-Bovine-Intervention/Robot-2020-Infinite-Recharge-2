@@ -110,6 +110,7 @@ public class ShooterMaster extends AdvancedSubsystem {
         limelight.setLEDMode(LedMode.kOff);
 
         SmartDashboard.putBoolean("Shooter/Debug", false);
+        SmartDashboard.putBoolean("Shooter/Debug/Autotargeting", false);
         SmartDashboard.putNumber("Shooter/Debug/HoodPosition", 0);
         SmartDashboard.putNumber("Shooter/Debug/TurretPosition", 0);
         SmartDashboard.putNumber("Shooter/Debug/FlywheelRPS", 0);
@@ -180,10 +181,17 @@ public class ShooterMaster extends AdvancedSubsystem {
                 } else {
                     limelight.setLEDMode(LedMode.kOff);
                 }
-                hood.setPosition(Math.toRadians(SmartDashboard.getNumber("Shooter/Debug/HoodPosition", 0)));
-                turret.setPosition(Math.toRadians(SmartDashboard.getNumber("Shooter/Debug/TurretPosition", 0)));
-                flywheel.setRPS(SmartDashboard.getNumber("Shooter/Debug/FlywheelRPS", 0)/9.549);
 
+                if(SmartDashboard.getBoolean("Shooter/Debug/Autotargeting", false)){
+                    double cTurretPos = turret.getSensedPosition();
+                    double cHorizRad = limelight.getTargetHorizontalAngleRad();
+                    turret.setPosition(cTurretPos +cHorizRad/2.0);
+                } else {
+                    turret.setPosition(Math.toRadians(SmartDashboard.getNumber("Shooter/Debug/TurretPosition", 0)));
+                }
+
+                flywheel.setRPS(SmartDashboard.getNumber("Shooter/Debug/FlywheelRPM", 0)/9.5493);
+                hood.setPosition(Math.toRadians(SmartDashboard.getNumber("Shooter/Debug/HoodPosition", 0)));
                 break;
 
             case iCalibrate:
@@ -231,12 +239,8 @@ public class ShooterMaster extends AdvancedSubsystem {
                 int keyHood = getLinear(targetDisplacement, dataTable);
                 double nominalPosition = handleLinear(targetDisplacement, dataTable[keyHood][0], dataTable[keyHood+1][0], dataTable[keyHood][1], dataTable[keyHood+1][1]);
 
-
-                //flywheel.setRPS(20);
-                flywheel.setRPS(nominalSpeed * 0.105);
+                flywheel.setRPS(nominalSpeed/9.5493);
                 hood.setPosition(Math.toRadians(nominalPosition));
-                //flywheel.setRPS(0);
-                //hood.setPosition(0);
                 break;
 
 
@@ -257,9 +261,9 @@ public class ShooterMaster extends AdvancedSubsystem {
     @Override
     public void updateSmartDashboard() {
         SmartDashboard.putNumber("Shooter/TargetDist", getTargetDisplacement());
-        SmartDashboard.putNumber("Shooter/TurretSensedPos", turret.getSensedPosition());
-        SmartDashboard.putNumber("Shooter/HoodSensedPos", hood.getSensedPosition());
-        SmartDashboard.putNumber("Shooter/FlywheelSensedRPS", flywheel.getSensedRPS());
+        SmartDashboard.putNumber("Shooter/TurretSensedPos", Math.toDegrees(turret.getSensedPosition()));
+        SmartDashboard.putNumber("Shooter/HoodSensedPos",  Math.toDegrees(hood.getSensedPosition()));
+        SmartDashboard.putNumber("Shooter/FlywheelSensedRPM", flywheel.getSensedRPS()*9.5493);
     }
 
 

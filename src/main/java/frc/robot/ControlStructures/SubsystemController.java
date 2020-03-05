@@ -27,10 +27,6 @@ public class SubsystemController{
         }
     }
 
-    public void onLoop(){
-    }
-
-
 
     public void onTeleLoop(){
         for(Subsystem subsystem : subsystems){
