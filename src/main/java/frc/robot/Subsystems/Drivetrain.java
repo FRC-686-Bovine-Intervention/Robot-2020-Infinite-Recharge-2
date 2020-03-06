@@ -45,6 +45,7 @@ public class Drivetrain extends Subsystem{
 
     //Physical parameters
     public static final double wheelDiameter = 6.0; //inches 
+    public static final double drivetrainWidth = 30.0; //inches 
 
 
 
@@ -185,13 +186,18 @@ public class Drivetrain extends Subsystem{
     }
 
 
+    /**
+     * What up fam?
+     * @return The linear and angular speed of the center of the robot in IPS and RPS
+     */
+    public LinearAngularSpeed getLinearAngularSpeed(){
+        WheelSpeed wheelSpeed = getSensedIPS();
+        double linearSpeed = (wheelSpeed.rightSpeed+wheelSpeed.leftSpeed)/2.0;
+        double angularSpeed = (wheelSpeed.rightSpeed-wheelSpeed.leftSpeed)/drivetrainWidth;
+        return new LinearAngularSpeed(linearSpeed, angularSpeed);
+    }
 
 
-    // public LinearAngularSpeed getLinearAngularSpeed(){
-    //     WheelSpeed wheelSpeed = getSensedVelocity();
-
-
-    // }
 
     public WheelSpeed getSensedIPS(){
         return new WheelSpeed(getSensedRPSLeft()*(wheelDiameter/2.0), getSensedRPSRight()*(wheelDiameter/2.0));
@@ -217,8 +223,8 @@ public class Drivetrain extends Subsystem{
         }
     }
 
-    class LinearAngularSpeed {
-        double linearSpeed, angularSpeed;
+    public class LinearAngularSpeed {
+        public double linearSpeed, angularSpeed;
         public LinearAngularSpeed(){}
         public LinearAngularSpeed(double linearSpeed, double angularSpeed){
             this.linearSpeed = linearSpeed;

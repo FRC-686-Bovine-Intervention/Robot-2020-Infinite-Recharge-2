@@ -23,14 +23,7 @@ public class ShooterMaster extends AdvancedSubsystem {
     private Turret turret;
     private Hood hood;
     private Flywheel flywheel;
-    private DigitalInput hallEffect;
     private Limelight limelight;
-
-
-    //Physical Variables =====================================
-    private static final double targetHeight = 99;
-    private static final double cameraHeight = 41;
-    private static final double cameraAngleElevation = 23;//25;
 
 
 
@@ -81,17 +74,6 @@ public class ShooterMaster extends AdvancedSubsystem {
 
     //Shooting variables:
     private double lastTargetPos = 0;
-
-
-
-
-    public double[][] dataTable = {
-        {24,3600,0},
-        {49,2750,22},
-        {105,3000,35},
-        {189,4000,45},
-        {265,4750,47},
-    };
 
 
 
@@ -292,32 +274,4 @@ public class ShooterMaster extends AdvancedSubsystem {
     }
     
 
-
-
-    public double getTargetDisplacement(){
-        double targetY = (targetHeight-cameraHeight)/Math.tan(limelight.getTargetVerticalAngleRad()+Math.toRadians(cameraAngleElevation));
-        double targetX = targetY*Math.tan(-limelight.getTargetHorizontalAngleRad()); //Negative is to ensure that left of camera is positive from top-view
-        Vector2d detectedTargetPos = new Vector2d(targetX, targetY);
-        return detectedTargetPos.length();
-    }
-
-    public int getLinear (double d, double table[][])
-    {
-        double distance = Math.max(Math.min(d, table[table.length-1][0]), table[0][0]);
-        int k;
-        for (k=0;k<table.length;k++)
-        {
-            if (distance <= table[k][0])
-            {
-                break;
-            }
-        }
-        return Math.max(k-1, 0);
-    }
-
-
-    public double handleLinear (double d, double dL, double dH, double sL, double sH)
-    {
-        return (sH-sL)*Math.min((d-dL)/(dH-dL),1)+sL;
-    }
 }
