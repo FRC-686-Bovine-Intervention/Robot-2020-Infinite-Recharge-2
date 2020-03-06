@@ -59,8 +59,8 @@ public class ShooterMaster extends AdvancedSubsystem {
     
 
 
-    private int failedLoops = 0;
-    private static final int maxFailedLoops = 3;
+    // private int failedLoops = 0;
+    // private static final int maxFailedLoops = 3;
 
     private boolean allCalibrated = false;
 
@@ -112,11 +112,11 @@ public class ShooterMaster extends AdvancedSubsystem {
 
     @Override
     public void run(){
-        if(!limelight.getIsTargetFound() && (controls.getBoolean(DriverControlsEnum.SHOOT))){
-            failedLoops++;
-        } else {
-            failedLoops = 0;
-        }
+        // if(!limelight.getIsTargetFound() && (controls.getBoolean(DriverControlsEnum.SHOOT))){
+        //     failedLoops++;
+        // } else {
+        //     failedLoops = 0;
+        // }
 
 
 
@@ -128,7 +128,7 @@ public class ShooterMaster extends AdvancedSubsystem {
         if((cDecision.id == calibrate.id && !allCalibrated) || controls.getBoolean(DriverControlsEnum.CALIBRATE)){
             calibrate.vote();
         }
-        if(failedLoops >= maxFailedLoops){
+        if(!limelight.getIsTargetFound() && cDecision.id != iShoot && controls.getBoolean(DriverControlsEnum.SHOOT)){
             search.vote();
         }
         if(controls.getBoolean(DriverControlsEnum.SHOOT)){
@@ -137,7 +137,6 @@ public class ShooterMaster extends AdvancedSubsystem {
         if(SmartDashboard.getBoolean("Shooter/Debug", false)){
             debug.vote();
         }
-
 
         //Default:
         idle.vote();
