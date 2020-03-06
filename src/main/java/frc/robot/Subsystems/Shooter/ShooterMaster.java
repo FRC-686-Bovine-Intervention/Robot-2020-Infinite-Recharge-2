@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.ControlStructures.AdvancedSubsystem;
 import frc.robot.Controls.Controls;
 import frc.robot.Controls.DriverControlsEnum;
+import frc.robot.Subsystems.Drivetrain;
 import frc.robot.Subsystems.Shooter.Limelight.LedMode;
 import frc.robot.util.Vector2d;
 
@@ -23,14 +24,7 @@ public class ShooterMaster extends AdvancedSubsystem {
     private Turret turret;
     private Hood hood;
     private Flywheel flywheel;
-    private DigitalInput hallEffect;
     private Limelight limelight;
-
-
-    //Physical Variables =====================================
-    private static final double targetHeight = 99;
-    private static final double cameraHeight = 41;
-    private static final double cameraAngleElevation = 23;//25;
 
 
 
@@ -80,18 +74,10 @@ public class ShooterMaster extends AdvancedSubsystem {
 
 
     //Shooting variables:
-    private double lastTargetPos = 0;
-
-
-
-
-    public double[][] dataTable = {
-        {24,3600,0},
-        {49,2750,22},
-        {105,3000,35},
-        {189,4000,45},
-        {265,4750,47},
-    };
+    //private double lastTargetPos = 0;
+    private double lastDrivePosLeft = 0;
+    private double lastDrivePosRight = 0;
+    private Vector2d runningTargetPos = null, lastTargetPos = null;
 
 
 
@@ -110,6 +96,7 @@ public class ShooterMaster extends AdvancedSubsystem {
         limelight.setLEDMode(LedMode.kOff);
 
         SmartDashboard.putBoolean("Shooter/Debug", false);
+        SmartDashboard.putBoolean("Shooter/Debug/Autotargeting", false);
         SmartDashboard.putNumber("Shooter/Debug/HoodPosition", 0);
         SmartDashboard.putNumber("Shooter/Debug/TurretPosition", 0);
         SmartDashboard.putNumber("Shooter/Debug/FlywheelRPS", 0);
@@ -180,10 +167,17 @@ public class ShooterMaster extends AdvancedSubsystem {
                 } else {
                     limelight.setLEDMode(LedMode.kOff);
                 }
-                hood.setPosition(Math.toRadians(SmartDashboard.getNumber("Shooter/Debug/HoodPosition", 0)));
-                turret.setPosition(Math.toRadians(SmartDashboard.getNumber("Shooter/Debug/TurretPosition", 0)));
-                flywheel.setRPS(SmartDashboard.getNumber("Shooter/Debug/FlywheelRPS", 0)/9.549);
 
+                if(SmartDashboard.getBoolean("Shooter/Debug/Autotargeting", false)){
+                    double cTurretPos = turret.getSensedPosition();
+                    double cHorizRad = limelight.getTargetHorizontalAngleRad();
+                    turret.setPosition(cTurretPos +cHorizRad/2.0);
+                } else {
+                    turret.setPosition(Math.toRadians(SmartDashboard.getNumber("Shooter/Debug/TurretPosition", 0)));
+                }
+
+                flywheel.setRPS(SmartDashboard.getNumber("Shooter/Debug/FlywheelRPM", 0)/9.5493);
+                hood.setPosition(Math.toRadians(SmartDashboard.getNumber("Shooter/Debug/HoodPosition", 0)));
                 break;
 
             case iCalibrate:
@@ -213,30 +207,54 @@ public class ShooterMaster extends AdvancedSubsystem {
 
             case iShoot:
                 limelight.setLEDMode(LedMode.kOn);
-                double targetDisplacement;
+                
+                //Determining what displacement vector will be used for the target
+                Vector2d targetPos;
                 if(limelight.getIsTargetFound()){
-                    targetDisplacement = getTargetDisplacement();
-                    lastTargetPos = targetDisplacement;
+                    runningTargetPos = ShooterCalcs.getTargetDisplacement(runningTargetPos, limelight.getTargetVerticalAngleRad(),
+                                     limelight.getTargetHorizontalAngleRad(), turret.getSensedPosition());
+                    targetPos = runningTargetPos;
+
+                    //Updating backup variables:
+                    lastTargetPos = runningTargetPos;
+                    lastDrivePosLeft = Drivetrain.getInstance().getSensedInchesLeft();
+                    lastDrivePosRight = Drivetrain.getInstance().getSensedInchesRight();
                 } else {
-                    targetDisplacement = lastTargetPos;
+                    targetPos = ShooterCalcs.getNewTargetPos(lastTargetPos, 
+                                    Drivetrain.getInstance().getSensedInchesLeft()- lastDrivePosLeft, Drivetrain.getInstance().getSensedInchesRight() - lastDrivePosRight);
                 }
+                
+                //Calculating information necessary for making shot along with applying lead
+                Vector2d shooterVelocity = ShooterCalcs.calcShooterLeadVelocity(targetPos, Drivetrain.getInstance().getLinearAngularSpeed());
+                double hoodPosition = ShooterCalcs.calcHoodPosition(targetPos.length());
 
-                double cHorizRad = limelight.getTargetHorizontalAngleRad();
-                double cTurretPos = turret.getSensedPosition();
-                turret.setPosition(cTurretPos +cHorizRad/2.0);
+                //Respond physically
+                flywheel.setRPS(shooterVelocity.length());
+                turret.setPosition(shooterVelocity.angle());
+                hood.setPosition(hoodPosition);
 
-                int keyRPS = getLinear(targetDisplacement, dataTable);
-                double nominalSpeed = handleLinear(targetDisplacement, dataTable[keyRPS][0], dataTable[keyRPS+1][0], dataTable[keyRPS][1], dataTable[keyRPS+1][1]);
+                //Old Code:
 
-                int keyHood = getLinear(targetDisplacement, dataTable);
-                double nominalPosition = handleLinear(targetDisplacement, dataTable[keyHood][0], dataTable[keyHood+1][0], dataTable[keyHood][1], dataTable[keyHood+1][1]);
+                // double targetDisplacement;
+                // if(limelight.getIsTargetFound()){
+                //     targetDisplacement = getTargetDisplacement();
+                //     lastTargetPos = targetDisplacement;
+                // } else {
+                //     targetDisplacement = lastTargetPos;
+                // }
 
+                // double cHorizRad = limelight.getTargetHorizontalAngleRad();
+                // double cTurretPos = turret.getSensedPosition();
+                // turret.setPosition(cTurretPos +cHorizRad/2.0);
 
-                //flywheel.setRPS(20);
-                flywheel.setRPS(nominalSpeed * 0.105);
-                hood.setPosition(Math.toRadians(nominalPosition));
-                //flywheel.setRPS(0);
-                //hood.setPosition(0);
+                // int keyRPS = getLinear(targetDisplacement, dataTable);
+                // double nominalSpeed = handleLinear(targetDisplacement, dataTable[keyRPS][0], dataTable[keyRPS+1][0], dataTable[keyRPS][1], dataTable[keyRPS+1][1]);
+
+                // int keyHood = getLinear(targetDisplacement, dataTable);
+                // double nominalPosition = handleLinear(targetDisplacement, dataTable[keyHood][0], dataTable[keyHood+1][0], dataTable[keyHood][1], dataTable[keyHood+1][1]);
+
+                // flywheel.setRPS(nominalSpeed/9.5493);
+                // hood.setPosition(Math.toRadians(nominalPosition));
                 break;
 
 
@@ -256,10 +274,12 @@ public class ShooterMaster extends AdvancedSubsystem {
 
     @Override
     public void updateSmartDashboard() {
-        SmartDashboard.putNumber("Shooter/TargetDist", getTargetDisplacement());
-        SmartDashboard.putNumber("Shooter/TurretSensedPos", turret.getSensedPosition());
-        SmartDashboard.putNumber("Shooter/HoodSensedPos", hood.getSensedPosition());
-        SmartDashboard.putNumber("Shooter/FlywheelSensedRPS", flywheel.getSensedRPS());
+        if(lastTargetPos != null){
+            SmartDashboard.putNumber("Shooter/TargetDist", lastTargetPos.length());
+        }
+        SmartDashboard.putNumber("Shooter/TurretSensedPos", Math.toDegrees(turret.getSensedPosition()));
+        SmartDashboard.putNumber("Shooter/HoodSensedPos",  Math.toDegrees(hood.getSensedPosition()));
+        SmartDashboard.putNumber("Shooter/FlywheelSensedRPM", flywheel.getSensedRPS()*9.5493);
     }
 
 
@@ -288,32 +308,4 @@ public class ShooterMaster extends AdvancedSubsystem {
     }
     
 
-
-
-    public double getTargetDisplacement(){
-        double targetY = (targetHeight-cameraHeight)/Math.tan(limelight.getTargetVerticalAngleRad()+Math.toRadians(cameraAngleElevation));
-        double targetX = targetY*Math.tan(-limelight.getTargetHorizontalAngleRad()); //Negative is to ensure that left of camera is positive from top-view
-        Vector2d detectedTargetPos = new Vector2d(targetX, targetY);
-        return detectedTargetPos.length();
-    }
-
-    public int getLinear (double d, double table[][])
-    {
-        double distance = Math.max(Math.min(d, table[table.length-1][0]), table[0][0]);
-        int k;
-        for (k=0;k<table.length;k++)
-        {
-            if (distance <= table[k][0])
-            {
-                break;
-            }
-        }
-        return Math.max(k-1, 0);
-    }
-
-
-    public double handleLinear (double d, double dL, double dH, double sL, double sH)
-    {
-        return (sH-sL)*Math.min((d-dL)/(dH-dL),1)+sL;
-    }
 }

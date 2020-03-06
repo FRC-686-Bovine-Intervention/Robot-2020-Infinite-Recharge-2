@@ -23,46 +23,30 @@ public class Drivetrain extends Subsystem{
 
     private Controls controls;
 
-    private TalonFX leftMaster, leftSlave, rightMaster, rightSlave;
+    public TalonFX leftMaster, leftSlave, rightMaster, rightSlave;
 
-    private static final double kFPosLeft = 0;
-    private static final double kPPosLeft = 0.32;
-    private static final double kIPosLeft = 0;
-    private static final double kDPosLeft = 3.2;
-    private static final int leftTolerancePos = 10;
+    private static final double kFPos = 0;
+    private static final double kPPos = 0.32;
+    private static final double kIPos = 0;
+    private static final double kDPos = 3.2;
+    private static final int tolerancePos = 10;
 
-    private static final double kFVelLeft = 0.05; //0.05;
-    private static final double kPVelLeft = 0.006; //0.032;
-    private static final double kIVelLeft = 0.0; //0;
-    private static final double kDVelLeft = 0.25; //2.56;
-    private static final int leftToleranceVel = 0;
+    private static final double kFVel = 0.05; //0.05;
+    private static final double kPVel = 0.006; //0.032;
+    private static final double kIVel = 0.0; //0;
+    private static final double kDVel = 0.25; //2.56;
+    private static final int toleranceVel = 0;
     
     private static final double encoderUnitsPerRevLeft = 24593.0;
-
-
-    
-    private static final double kFPosRight = 0;
-    private static final double kPPosRight = 0.32;
-    private static final double kIPosRight = 0;
-    private static final double kDPosRight = 3.2;
-    private static final int rightTolerancePos = 10;
-
-    private static final double kFVelRight = 0.05;
-    private static final double kPVelRight = 0.006;
-    private static final double kIVelRight = 0.0;
-    private static final double kDVelRight = 0.25;
-    private static final int rightToleranceVel = 0;
-
     private static final double encoderUnitsPerRevRight = 23763.0;
+
 
 
 
     //Physical parameters
     public static final double wheelDiameter = 6.0; //inches 
-    public static final double extensionsPerRev = 1000; //In/rev
+    public static final double drivetrainWidth = 30.0; //inches 
 
-
-    //20610
 
 
 
@@ -99,18 +83,18 @@ public class Drivetrain extends Subsystem{
         
         //Configure position loop PID
         leftMaster.selectProfileSlot(Constants.kSlotIdxPos, Constants.kTalonPidIdx); 
-        leftMaster.config_kF(Constants.kSlotIdxPos, kFPosLeft, Constants.kTalonTimeoutMs); 
-        leftMaster.config_kP(Constants.kSlotIdxPos, kPPosLeft, Constants.kTalonTimeoutMs); 
-        leftMaster.config_kI(Constants.kSlotIdxPos, kIPosLeft, Constants.kTalonTimeoutMs); 
-        leftMaster.config_kD(Constants.kSlotIdxPos, kDPosLeft, Constants.kTalonTimeoutMs);
-        leftMaster.configAllowableClosedloopError(Constants.kSlotIdxPos, leftTolerancePos, Constants.kTalonTimeoutMs);
+        leftMaster.config_kF(Constants.kSlotIdxPos, kFPos, Constants.kTalonTimeoutMs); 
+        leftMaster.config_kP(Constants.kSlotIdxPos, kPPos, Constants.kTalonTimeoutMs); 
+        leftMaster.config_kI(Constants.kSlotIdxPos, kIPos, Constants.kTalonTimeoutMs); 
+        leftMaster.config_kD(Constants.kSlotIdxPos, kDPos, Constants.kTalonTimeoutMs);
+        leftMaster.configAllowableClosedloopError(Constants.kSlotIdxPos, tolerancePos, Constants.kTalonTimeoutMs);
         //Configure velocity loop PID 
         leftMaster.selectProfileSlot(Constants.kSlotIdxSpeed, Constants.kTalonPidIdx); 
-        leftMaster.config_kF(Constants.kSlotIdxSpeed, kFVelLeft, Constants.kTalonTimeoutMs); 
-        leftMaster.config_kP(Constants.kSlotIdxSpeed, kPVelLeft, Constants.kTalonTimeoutMs); 
-        leftMaster.config_kI(Constants.kSlotIdxSpeed, kIVelLeft, Constants.kTalonTimeoutMs); 
-        leftMaster.config_kD(Constants.kSlotIdxSpeed, kDVelLeft, Constants.kTalonTimeoutMs);
-        leftMaster.configAllowableClosedloopError(Constants.kSlotIdxSpeed, leftToleranceVel, Constants.kTalonTimeoutMs);
+        leftMaster.config_kF(Constants.kSlotIdxSpeed, kFVel, Constants.kTalonTimeoutMs); 
+        leftMaster.config_kP(Constants.kSlotIdxSpeed, kPVel, Constants.kTalonTimeoutMs); 
+        leftMaster.config_kI(Constants.kSlotIdxSpeed, kIVel, Constants.kTalonTimeoutMs); 
+        leftMaster.config_kD(Constants.kSlotIdxSpeed, kDVel, Constants.kTalonTimeoutMs);
+        leftMaster.configAllowableClosedloopError(Constants.kSlotIdxSpeed, toleranceVel, Constants.kTalonTimeoutMs);
 
 
         //==============================
@@ -126,18 +110,18 @@ public class Drivetrain extends Subsystem{
         
         //Configure position loop PID
         rightMaster.selectProfileSlot(Constants.kSlotIdxPos, Constants.kTalonPidIdx); 
-        rightMaster.config_kF(Constants.kSlotIdxPos, kFPosRight, Constants.kTalonTimeoutMs); 
-        rightMaster.config_kP(Constants.kSlotIdxPos, kPPosRight, Constants.kTalonTimeoutMs); 
-        rightMaster.config_kI(Constants.kSlotIdxPos, kIPosRight, Constants.kTalonTimeoutMs); 
-        rightMaster.config_kD(Constants.kSlotIdxPos, kDPosRight, Constants.kTalonTimeoutMs);
-        rightMaster.configAllowableClosedloopError(Constants.kSlotIdxPos, rightTolerancePos, Constants.kTalonTimeoutMs);
+        rightMaster.config_kF(Constants.kSlotIdxPos, kFPos, Constants.kTalonTimeoutMs); 
+        rightMaster.config_kP(Constants.kSlotIdxPos, kPPos, Constants.kTalonTimeoutMs); 
+        rightMaster.config_kI(Constants.kSlotIdxPos, kIPos, Constants.kTalonTimeoutMs); 
+        rightMaster.config_kD(Constants.kSlotIdxPos, kDPos, Constants.kTalonTimeoutMs);
+        rightMaster.configAllowableClosedloopError(Constants.kSlotIdxPos, tolerancePos, Constants.kTalonTimeoutMs);
 		//Configure velocity loop PID
         rightMaster.selectProfileSlot(Constants.kSlotIdxSpeed, Constants.kTalonPidIdx); 
-        rightMaster.config_kF(Constants.kSlotIdxSpeed, kFVelRight, Constants.kTalonTimeoutMs); 
-        rightMaster.config_kP(Constants.kSlotIdxSpeed, kPVelRight, Constants.kTalonTimeoutMs); 
-        rightMaster.config_kI(Constants.kSlotIdxSpeed, kIVelRight, Constants.kTalonTimeoutMs); 
-        rightMaster.config_kD(Constants.kSlotIdxSpeed, kDVelRight, Constants.kTalonTimeoutMs);
-        rightMaster.configAllowableClosedloopError(Constants.kSlotIdxSpeed, rightToleranceVel, Constants.kTalonTimeoutMs);
+        rightMaster.config_kF(Constants.kSlotIdxSpeed, kFVel, Constants.kTalonTimeoutMs); 
+        rightMaster.config_kP(Constants.kSlotIdxSpeed, kPVel, Constants.kTalonTimeoutMs); 
+        rightMaster.config_kI(Constants.kSlotIdxSpeed, kIVel, Constants.kTalonTimeoutMs); 
+        rightMaster.config_kD(Constants.kSlotIdxSpeed, kDVel, Constants.kTalonTimeoutMs);
+        rightMaster.configAllowableClosedloopError(Constants.kSlotIdxSpeed, toleranceVel, Constants.kTalonTimeoutMs);
 
 
         leftSlave.follow(leftMaster);
@@ -152,16 +136,18 @@ public class Drivetrain extends Subsystem{
 
     @Override
     public void run(){
-        double leftPercent, rightPercent;
+        double leftPercent, rightPercent, IPSLeft, IPSRight;
         if(Lift.getInstance().getPTOState() == PTOStates.DRIVE_ENABLED){
             leftPercent = (controls.getYAxis() +controls.getXAxis())/2.0;
             rightPercent = (controls.getYAxis()-controls.getXAxis())/2.0;
+            IPSLeft = leftPercent*144;
+            IPSRight = rightPercent*144;
+        } else if(Lift.getInstance().getPTOState() == PTOStates.LIFT_ENABLED){
+            IPSRight = IPSLeft = controls.getYAxis()*144;
         } else {
-            rightPercent = leftPercent = 0;
+            IPSLeft = IPSRight = 0;
         }
-        leftPercent *= 144;
-        rightPercent *= 144;
-        setVelocity(leftPercent, rightPercent);
+        setDriveIPS(IPSLeft, IPSRight);
     }
 
     @Override
@@ -175,17 +161,18 @@ public class Drivetrain extends Subsystem{
     }
 
 
-    public void setPower(double leftPower, double rightPower){
-        leftMaster.set(ControlMode.PercentOutput, leftPower);
-        rightMaster.set(ControlMode.PercentOutput, rightPower);
-    }
+
 
     /**
      * Sets velocity of drivetrain in inches/sec
      */
-    public void setVelocity(double leftVel, double rightVel){
+    public void setDriveIPS(double leftVel, double rightVel){
         leftVel /= (wheelDiameter/2.0);
         rightVel /= (wheelDiameter/2.0);
+        setRPS(leftVel, rightVel);
+    }
+
+    public void setRPS(double leftVel, double rightVel){
         leftVel = Utility.rpsToUPF(leftVel, encoderUnitsPerRevLeft);
         rightVel = Utility.rpsToUPF(rightVel, encoderUnitsPerRevRight);
 
@@ -193,14 +180,24 @@ public class Drivetrain extends Subsystem{
         rightMaster.set(ControlMode.Velocity, rightVel);
     }
 
+    public void setPower(double leftPower, double rightPower){
+        leftMaster.set(ControlMode.PercentOutput, leftPower);
+        rightMaster.set(ControlMode.PercentOutput, rightPower);
+    }
 
 
+    /**
+     * What up fam?
+     * @return The linear and angular speed of the center of the robot in IPS and RPS, respectively
+     */
+    public LinearAngularSpeed getLinearAngularSpeed(){
+        WheelSpeed wheelSpeed = getSensedIPS();
+        double linearSpeed = (wheelSpeed.rightSpeed+wheelSpeed.leftSpeed)/2.0;
+        double angularSpeed = (wheelSpeed.rightSpeed-wheelSpeed.leftSpeed)/drivetrainWidth;
+        return new LinearAngularSpeed(linearSpeed, angularSpeed);
+    }
 
-    // public LinearAngularSpeed getLinearAngularSpeed(){
-    //     WheelSpeed wheelSpeed = getSensedVelocity();
 
-
-    // }
 
     public WheelSpeed getSensedIPS(){
         return new WheelSpeed(getSensedRPSLeft()*(wheelDiameter/2.0), getSensedRPSRight()*(wheelDiameter/2.0));
@@ -213,7 +210,15 @@ public class Drivetrain extends Subsystem{
     public double getSensedRPSRight(){
         return Utility.upfToRPS(rightMaster.getSelectedSensorVelocity(), encoderUnitsPerRevRight);
     }
+    
 
+    public double getSensedInchesLeft(){
+        return Utility.encoderUnitsToRadians(leftMaster.getSelectedSensorPosition(), encoderUnitsPerRevLeft)*(wheelDiameter/2.0);
+    }
+
+    public double getSensedInchesRight(){
+        return Utility.encoderUnitsToRadians(rightMaster.getSelectedSensorPosition(), encoderUnitsPerRevRight)*(wheelDiameter/2.0);
+    }
 
 
 
@@ -226,8 +231,8 @@ public class Drivetrain extends Subsystem{
         }
     }
 
-    class LinearAngularSpeed {
-        double linearSpeed, angularSpeed;
+    public class LinearAngularSpeed {
+        public double linearSpeed, angularSpeed;
         public LinearAngularSpeed(){}
         public LinearAngularSpeed(double linearSpeed, double angularSpeed){
             this.linearSpeed = linearSpeed;

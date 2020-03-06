@@ -66,6 +66,8 @@ public class ConveyorBelt extends Subsystem {
 
         SmartDashboard.putBoolean("Conveyorbelt/Debug", false);
         SmartDashboard.putNumber("Conveyorbelt/Debug/SetTowerPercent", 0);
+        SmartDashboard.putNumber("Conveyorbelt/Debug/SetLeftVPercent", 0);
+        SmartDashboard.putNumber("Conveyorbelt/Debug/SetRightVPercent", 0);
     }
 
 
@@ -76,7 +78,7 @@ public class ConveyorBelt extends Subsystem {
 
     @Override
     public void run(){
-        if(SmartDashboard.getBoolean("Conveyorbelt/Debug", false)){
+        if(!SmartDashboard.getBoolean("Conveyorbelt/Debug", false)){
             if(shootEdge.update(controls.getBoolean(DriverControlsEnum.SHOOT))){
                 reverseTower();
                 reverseVBelt();
@@ -110,6 +112,8 @@ public class ConveyorBelt extends Subsystem {
             }
         } else {
             towerMaster.set(ControlMode.PercentOutput, SmartDashboard.getNumber("Conveyorbelt/Debug/SetTowerPercent", 0));
+            vBeltLeft.set(ControlMode.PercentOutput, SmartDashboard.getNumber("Conveyorbelt/Debug/SetLeftVPercent", 0));
+            vBeltRight.set(ControlMode.PercentOutput, SmartDashboard.getNumber("Conveyorbelt/Debug/SetRightVPercent", 0));
         }
     }
 
