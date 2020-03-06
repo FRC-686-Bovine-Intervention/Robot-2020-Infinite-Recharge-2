@@ -45,25 +45,17 @@ public class ShooterMaster extends AdvancedSubsystem {
         }
     }
 
-    private static final int iCalibrate = 1, iSearch =2, iShoot = 3, iIdle = 4, iDebug = 5;
+    private static final int iSearch = 1, iShoot = 2, iIdle = 3, iDebug = 4;
 
     Decision debug = new Decision(iDebug, 1);
-    Decision calibrate = new Decision(iCalibrate, 2);
-    Decision search = new Decision(iSearch, 3);
-    Decision shoot = new Decision(iShoot, 4);
-    Decision idle = new Decision(iIdle, 5);
+    Decision search = new Decision(iSearch, 2);
+    Decision shoot = new Decision(iShoot, 3);
+    Decision idle = new Decision(iIdle, 4);
 
-    Decision[] options = {calibrate, search, shoot, idle, debug};
+    Decision[] options = {search, shoot, idle, debug};
 
     private Decision cDecision = idle;
     
-
-
-    // private int failedLoops = 0;
-    // private static final int maxFailedLoops = 3;
-
-    private boolean allCalibrated = false;
-
 
 
     //Search variables
@@ -112,22 +104,12 @@ public class ShooterMaster extends AdvancedSubsystem {
 
     @Override
     public void run(){
-        // if(!limelight.getIsTargetFound() && (controls.getBoolean(DriverControlsEnum.SHOOT))){
-        //     failedLoops++;
-        // } else {
-        //     failedLoops = 0;
-        // }
-
-
 
         for(Decision option : options){
             option.clear();
         }
 
         //Check conditions for each:
-        if((cDecision.id == calibrate.id && !allCalibrated) || controls.getBoolean(DriverControlsEnum.CALIBRATE)){
-            calibrate.vote();
-        }
         if(!limelight.getIsTargetFound() && cDecision.id != iShoot && controls.getBoolean(DriverControlsEnum.SHOOT)){
             search.vote();
         }
@@ -178,13 +160,6 @@ public class ShooterMaster extends AdvancedSubsystem {
                 flywheel.setRPS(SmartDashboard.getNumber("Shooter/Debug/FlywheelRPM", 0)/9.5493);
                 hood.setPosition(Math.toRadians(SmartDashboard.getNumber("Shooter/Debug/HoodPosition", 0)));
                 break;
-
-            case iCalibrate:
-                limelight.setLEDMode(LedMode.kOff);
-
-               
-                break;
-
 
 
             case iSearch:
