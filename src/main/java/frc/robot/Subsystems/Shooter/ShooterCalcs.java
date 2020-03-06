@@ -30,20 +30,20 @@ public class ShooterCalcs {
     /**
      * Ay what up
      * @param lastTargetPos
-     * @param leftLastPos
-     * @param rightLastPos
+     * @param leftDeltaPos
+     * @param rightDeltaPos
      * @return The target displacement vector relative to the robot's front
      */
 
-    public static Vector2d getNewTargetPos(Vector2d lastTargetPos, double leftLastPos, double rightLastPos){
-        Pose newRobotPose = getNewRobotPose(leftLastPos, rightLastPos);
+    public static Vector2d getNewTargetPos(Vector2d lastTargetPos, double leftDeltaPos, double rightDeltaPos){
+        Pose newRobotPose = getNewRobotPose(leftDeltaPos, rightDeltaPos);
         Vector2d newTargetPos = lastTargetPos.sub(newRobotPose.displacement);
         newTargetPos = newTargetPos.rotate(-newRobotPose.angle);
         return newTargetPos;
     }
 
-    public static Pose getNewRobotPose(double leftLastPos, double rightLastPos){
-        Arc arc = getArc(leftLastPos, rightLastPos);
+    public static Pose getNewRobotPose(double leftDeltaPos, double rightDeltaPos){
+        Arc arc = getArc(leftDeltaPos, rightDeltaPos);
         double robotDispMag = 2*arc.radius*Math.sin(arc.angle/2.0);
         Vector2d robotDisplacement = new Vector2d(-robotDispMag*Math.sin(arc.angle/2.0),robotDispMag*Math.cos(arc.angle/2.0));
         Pose robotPose = new Pose(robotDisplacement, arc.angle);
@@ -58,8 +58,12 @@ public class ShooterCalcs {
     }
 
 
+    /**
+     * 
+     * @param targetDistance
+     * @return Necessary hood position for the targetDistance
+     */
     public static double calcHoodPosition(double targetDistance){
-        //Returns hood position in degrees
         int keyL = getLinear(targetDistance, dataTable);
         double hoodPosition = handleLinear(targetDistance, dataTable[keyL][0], dataTable[keyL+1][0], dataTable[keyL][2], dataTable[keyL+1][2]);
         hoodPosition /= 57.2958; //Converting to radians

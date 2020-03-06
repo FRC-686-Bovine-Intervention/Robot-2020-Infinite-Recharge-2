@@ -207,18 +207,33 @@ public class ShooterMaster extends AdvancedSubsystem {
 
             case iShoot:
                 limelight.setLEDMode(LedMode.kOn);
+                
+                //Determining what displacement vector will be used for the target
+                Vector2d targetPos;
                 if(limelight.getIsTargetFound()){
                     runningTargetPos = ShooterCalcs.getTargetDisplacement(runningTargetPos, limelight.getTargetVerticalAngleRad(),
                                      limelight.getTargetHorizontalAngleRad(), turret.getSensedPosition());
+                    targetPos = runningTargetPos;
+
+                    //Updating backup variables:
+                    lastTargetPos = runningTargetPos;
                     lastDrivePosLeft = Drivetrain.getInstance().getSensedInchesLeft();
                     lastDrivePosRight = Drivetrain.getInstance().getSensedInchesRight();
                 } else {
-                    runningTargetPos = ShooterCalcs.getNewTargetPos(lastTargetPos, lastDrivePosLeft, lastDrivePosRight);
+                    targetPos = ShooterCalcs.getNewTargetPos(lastTargetPos, 
+                                    Drivetrain.getInstance().getSensedInchesLeft()- lastDrivePosLeft, Drivetrain.getInstance().getSensedInchesRight() - lastDrivePosRight);
                 }
                 
+                //Calculating information necessary for making shot along with applying lead
+                Vector2d shooterVelocity = ShooterCalcs.calcShooterLeadVelocity(targetPos, Drivetrain.getInstance().getLinearAngularSpeed());
+                double hoodPosition = ShooterCalcs.calcHoodPosition(targetPos.length());
 
-                ShooterCalcs.calcShooterLeadVelocity(distance)
+                //Respond physically
+                flywheel.setRPS(shooterVelocity.length());
+                turret.setPosition(shooterVelocity.angle());
+                hood.setPosition(hoodPosition);
 
+                //Old Code:
 
                 // double targetDisplacement;
                 // if(limelight.getIsTargetFound()){
@@ -259,7 +274,9 @@ public class ShooterMaster extends AdvancedSubsystem {
 
     @Override
     public void updateSmartDashboard() {
-        SmartDashboard.putNumber("Shooter/TargetDist", getTargetDisplacement());
+        if(lastTargetPos != null){
+            SmartDashboard.putNumber("Shooter/TargetDist", lastTargetPos.length());
+        }
         SmartDashboard.putNumber("Shooter/TurretSensedPos", Math.toDegrees(turret.getSensedPosition()));
         SmartDashboard.putNumber("Shooter/HoodSensedPos",  Math.toDegrees(hood.getSensedPosition()));
         SmartDashboard.putNumber("Shooter/FlywheelSensedRPM", flywheel.getSensedRPS()*9.5493);
