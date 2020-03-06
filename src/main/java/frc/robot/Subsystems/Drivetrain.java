@@ -188,7 +188,7 @@ public class Drivetrain extends Subsystem{
 
     /**
      * What up fam?
-     * @return The linear and angular speed of the center of the robot in IPS and RPS
+     * @return The linear and angular speed of the center of the robot in IPS and RPS, respectively
      */
     public LinearAngularSpeed getLinearAngularSpeed(){
         WheelSpeed wheelSpeed = getSensedIPS();
@@ -210,7 +210,15 @@ public class Drivetrain extends Subsystem{
     public double getSensedRPSRight(){
         return Utility.upfToRPS(rightMaster.getSelectedSensorVelocity(), encoderUnitsPerRevRight);
     }
+    
 
+    public double getSensedInchesLeft(){
+        return Utility.encoderUnitsToRadians(leftMaster.getSelectedSensorPosition(), encoderUnitsPerRevLeft)*(wheelDiameter/2.0);
+    }
+
+    public double getSensedInchesRight(){
+        return Utility.encoderUnitsToRadians(rightMaster.getSelectedSensorPosition(), encoderUnitsPerRevRight)*(wheelDiameter/2.0);
+    }
 
 
 

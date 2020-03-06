@@ -5,9 +5,10 @@ import frc.robot.Subsystems.Drivetrain.LinearAngularSpeed;
 import frc.robot.util.Vector2d;
 
 public class ShooterCalcs {
-    //Units: inches, radians
+    //General Units: inches, radians
 
-    public double[][] dataTable = {
+    //Distance (in), rpm, hoodPos (deg)
+    public static double[][] dataTable = {
         {24,3600,0},
         {49,2750,22},
         {105,3000,35},
@@ -26,12 +27,27 @@ public class ShooterCalcs {
     public static final double shooterWheelRadius = 3;
 
 
+    /**
+     * Ay what up
+     * @param lastTargetPos
+     * @param leftLastPos
+     * @param rightLastPos
+     * @return The target displacement vector relative to the robot's front
+     */
 
-    public static Vector2d getRobotDisplacement(double leftLastPos, double rightLastPos){
+    public static Vector2d getNewTargetPos(Vector2d lastTargetPos, double leftLastPos, double rightLastPos){
+        Pose newRobotPose = getNewRobotPose(leftLastPos, rightLastPos);
+        Vector2d newTargetPos = lastTargetPos.sub(newRobotPose.displacement);
+        newTargetPos = newTargetPos.rotate(-newRobotPose.angle);
+        return newTargetPos;
+    }
+
+    public static Pose getNewRobotPose(double leftLastPos, double rightLastPos){
         Arc arc = getArc(leftLastPos, rightLastPos);
         double robotDispMag = 2*arc.radius*Math.sin(arc.angle/2.0);
         Vector2d robotDisplacement = new Vector2d(-robotDispMag*Math.sin(arc.angle/2.0),robotDispMag*Math.cos(arc.angle/2.0));
-        return robotDisplacement;
+        Pose robotPose = new Pose(robotDisplacement, arc.angle);
+        return robotPose;
     }
 
     public static Arc getArc(double leftLastPos, double rightLastPos){
@@ -42,34 +58,65 @@ public class ShooterCalcs {
     }
 
 
+    public static double calcHoodPosition(double targetDistance){
+        //Returns hood position in degrees
+        int keyL = getLinear(targetDistance, dataTable);
+        double hoodPosition = handleLinear(targetDistance, dataTable[keyL][0], dataTable[keyL+1][0], dataTable[keyL][2], dataTable[keyL+1][2]);
+        hoodPosition /= 57.2958; //Converting to radians
+        return hoodPosition;
+    }
 
+    public static double calcShooterVelocity(double distance){
+        int keyL = getLinear(distance, dataTable);
+        double nominalSpeed = handleLinear(distance, dataTable[keyL][0], dataTable[keyL+1][0], dataTable[keyL][1], dataTable[keyL+1][1]);
+        nominalSpeed /= 9.5493; //RPM to rps
+        return nominalSpeed; //Determine the balls' velocity
+    }
 
 
     //===========================
     //Leading Shots:
     //===========================
-    public double calcHoodPosition(double targetDistance){
-        //Returns hood position in degrees
-        int keyL = getLinear(targetDistance, dataTable);
-        double hoodPosition = handleLinear(targetDistance, dataTable[keyL][0], dataTable[keyL+1][0], dataTable[keyL][2], dataTable[keyL+1][2]);
-        return hoodPosition;
+
+    /**
+     * 
+     * @param targetDisplacement
+     * @param driveLASpeed
+     * @return The lead velocity vector, in RPS
+     */
+
+    public static Vector2d calcShooterLeadVelocity(Vector2d targetDisplacement, LinearAngularSpeed driveLASpeed){
+        double targetBallVelocityMag = calcShooterVelocity(targetDisplacement.length())*shooterWheelRadius*0.5;
+        Vector2d targetVelocityBall = new Vector2d(targetBallVelocityMag, 0); //Used to maintain magnitude
+        targetVelocityBall = targetVelocityBall.rotate(targetDisplacement.angle()); //Rotating it back to the correct rotation 
+
+        Vector2d turretVelocity = getTurretVelocity(driveLASpeed); //Get the velocity of the shooter on the robot
+
+        Vector2d leadVelocityBall = targetVelocityBall.sub(turretVelocity); //Determine the necessary velocity of the ball being shot
+        Vector2d leadVelocityShooter = Vector2d.magnitudeAngle(leadVelocityBall.length()*(2/shooterWheelRadius), leadVelocityBall.angle());
+
+        return leadVelocityShooter;
     }
 
 
-    public Vector2d calcBallVelocity(Vector2d targetDisplacement){
-        double targetVelocityMag = getTargetBallVelMag(targetDisplacement.length());
-        Vector2d targetVelocity = new Vector2d(0, targetVelocityMag); //Used to maintain magnitude
-        targetVelocity.rotate(targetDisplacement.angle()); //Rotating it back to the correct rotation 
-
-        Vector2d shooterVelocity = getShooterVelocity(); //Get the velocity of the shooter on the robot
-
-        Vector2d targetBallVelocity = targetVelocity.sub(shooterVelocity); //Determine the necessary velocity of the ball being shot
-
-        return targetBallVelocity;
+    public static Vector2d getTurretVelocity(LinearAngularSpeed driveLASpeed){
+        Vector2d shooterVelocity;
+        if(driveLASpeed.angularSpeed > Math.PI/6.0){
+            //Only use if angular speed is of some significant amount
+            double motionRadius = Math.abs(driveLASpeed.linearSpeed/driveLASpeed.angularSpeed);
+            Vector2d robotRadius = driveLASpeed.angularSpeed > 0 ? new Vector2d(0,motionRadius) : new Vector2d(0,-motionRadius);
+            Vector2d shooterRadius = shooterPosFromRobot.sub(robotRadius);
+            double shooterVelMag = Math.abs(shooterRadius.length()*driveLASpeed.angularSpeed);
+            shooterVelocity = new Vector2d(shooterVelMag,0);
+            double shooterVelAng = robotRadius.angle()+shooterRadius.angle();
+            shooterVelocity = driveLASpeed.linearSpeed>0 ? (shooterVelocity.rotate(shooterVelAng)) : (shooterVelocity.rotate(shooterVelAng+Math.PI));
+        } else {
+            shooterVelocity = new Vector2d(driveLASpeed.linearSpeed, 0);
+        }
+        return shooterVelocity;
     }
 
-
-    public Vector2d getTargetDisplacement(Vector2d runningTargetPos, double verticalRads, double horizontalRads, double turretRads){
+    public static Vector2d getTargetDisplacement(Vector2d runningTargetPos, double verticalRads, double horizontalRads, double turretRads){
         //Target Displacement angle is on the interval [-pi,pi]
         double targetY = (targetHeight-cameraHeight)/Math.tan(verticalRads+cameraAngleElevation);
         double targetX = targetY*Math.tan(horizontalRads); //Negative is to ensure that left of camera is positive from top-view
@@ -88,29 +135,7 @@ public class ShooterCalcs {
         return runningTargetPos;
     }
 
-    public Vector2d getShooterVelocity(double driveIPSLeft, double driveIPSRight, LinearAngularSpeed driveLASpeed){
-        Vector2d shooterVelocity;
-        if(driveLASpeed.angularSpeed > Math.PI/6.0){
-            //Only use if angular speed is of some significant amount
-            double motionRadius = Math.abs(driveLASpeed.linearSpeed/driveLASpeed.angularSpeed);
-            Vector2d robotRadius = driveLASpeed.angularSpeed > 0 ? new Vector2d(0,motionRadius) : new Vector2d(0,-motionRadius);
-            Vector2d shooterRadius = shooterPosFromRobot.sub(robotRadius);
-            double shooterVelMag = Math.abs(shooterRadius.length()*driveLASpeed.angularSpeed);
-            shooterVelocity = new Vector2d(shooterVelMag,0);
-            double shooterVelAng = robotRadius.angle()+shooterRadius.angle();
-            shooterVelocity = driveLASpeed.linearSpeed>0 ? (shooterVelocity.rotate(shooterVelAng)) : (shooterVelocity.rotate(shooterVelAng+Math.PI));
-        } else {
-            shooterVelocity = new Vector2d(driveLASpeed.linearSpeed, 0);
-        }
-        return shooterVelocity;
-    }
-
-    public double getTargetBallVelMag(double distance){
-        int keyL = getLinear(distance, dataTable);
-        double nominalSpeed = handleLinear(distance, dataTable[keyL][0], dataTable[keyL+1][0], dataTable[keyL][1], dataTable[keyL+1][1]);
-        return (0.5*nominalSpeed*shooterWheelRadius); //Determine the balls' velocity
-    }
-
+    //Simpler version of getTargetDisplacement();
     // public double getTargetDisplacement(){
     //     double targetY = (targetHeight-cameraHeight)/Math.tan(limelight.getTargetVerticalAngleRad()+Math.toRadians(cameraAngleElevation));
     //     double targetX = targetY*Math.tan(-limelight.getTargetHorizontalAngleRad()); //Negative is to ensure that left of camera is positive from top-view
@@ -118,7 +143,7 @@ public class ShooterCalcs {
     //     return detectedTargetPos.length();
     // }
 
-    public int getLinear (double d, double table[][])
+    public static int getLinear (double d, double table[][])
     {
         double distance = Math.max(Math.min(d, table[table.length-1][0]), table[0][0]);
         int k;
@@ -133,7 +158,7 @@ public class ShooterCalcs {
     }
 
 
-    public double handleLinear (double d, double dL, double dH, double sL, double sH)
+    public static double handleLinear (double d, double dL, double dH, double sL, double sH)
     {
         return (sH-sL)*Math.min((d-dL)/(dH-dL),1)+sL;
     }
@@ -150,6 +175,15 @@ public class ShooterCalcs {
             this.angle = angle;
             this.radius = radius;
             this.length = angle*radius;
+        }
+    }
+
+    static class Pose {
+        Vector2d displacement;
+        double angle;
+        public Pose(Vector2d displacement, double angle){
+            this.displacement = displacement;
+            this.angle = angle;
         }
     }
 
