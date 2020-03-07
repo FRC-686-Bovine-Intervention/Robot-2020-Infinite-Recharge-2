@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
 import frc.robot.ControlStructures.Subsystem;
 import frc.robot.Controls.Controls;
@@ -24,6 +25,9 @@ public class Intake extends Subsystem{
     private TalonSRX intakeMotor;
     private DoubleSolenoid mainSolenoids, secondarySolenoids;
 
+    private double reverseCurrentThreshold = 25;
+    private double reverseTime = 1;
+    private double reverseStartTime = -1;
 
     public Intake(){
         controls = Controls.getInstance();
@@ -44,8 +48,10 @@ public class Intake extends Subsystem{
     public void run(){
         if(controls.getBoolean(DriverControlsEnum.INTAKE)){
             deploy();
-        } else {
+        } else if (Timer.getFPGATimestamp() - reverseStartTime >= reverseTime || reverseStartTime == -1)
+        {
             retract();
+            reverseStartTime = -1;
         }
     }
 
@@ -68,7 +74,20 @@ public class Intake extends Subsystem{
     }
 
     public void deploy(){
-        intakeMotor.set(ControlMode.PercentOutput, Constants.kIntakePower);
+        if (intakeMotor.getStatorCurrent() >= reverseCurrentThreshold)
+        {
+            reverseStartTime = Timer.getFPGATimestamp();
+        }
+
+        if (Timer.getFPGATimestamp() - reverseStartTime >= reverseTime || reverseStartTime == -1)
+        {
+            intakeMotor.set(ControlMode.PercentOutput, Constants.kIntakePower);
+            reverseStartTime = -1;
+        }
+        else
+        {
+            intakeMotor.set(ControlMode.PercentOutput, -Constants.kIntakePower);
+        }
         mainSolenoids.set(Value.kReverse);
         secondarySolenoids.set(Value.kReverse);
     }
