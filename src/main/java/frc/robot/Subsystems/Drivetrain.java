@@ -254,8 +254,8 @@ public class Drivetrain extends Subsystem{
 
 
 
-    class WheelSpeed {
-        double leftSpeed, rightSpeed;
+    public class WheelSpeed {
+        public double leftSpeed, rightSpeed;
         public WheelSpeed(double leftSpeed, double rightSpeed){
             this.leftSpeed = leftSpeed;
             this.rightSpeed = rightSpeed;

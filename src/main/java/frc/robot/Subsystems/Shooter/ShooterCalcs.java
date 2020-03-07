@@ -1,7 +1,11 @@
 package frc.robot.Subsystems.Shooter;
 
 import frc.robot.Constants;
+import frc.robot.FieldDimensions;
+import frc.robot.ControlStructures.RobotState;
 import frc.robot.Subsystems.Drivetrain.LinearAngularSpeed;
+import frc.robot.sensors.Pigeon;
+import frc.robot.util.Pose;
 import frc.robot.util.Vector2d;
 
 public class ShooterCalcs {
@@ -36,9 +40,11 @@ public class ShooterCalcs {
      */
 
     public static Vector2d getNewTargetPos(Vector2d lastTargetPos, double leftDeltaPos, double rightDeltaPos){
-        Pose newRobotPose = getNewRobotPose(leftDeltaPos, rightDeltaPos);
-        Vector2d newTargetPos = lastTargetPos.sub(newRobotPose.displacement);
-        newTargetPos = newTargetPos.rotate(-newRobotPose.angle);
+        //Pose newRobotPose = getNewRobotPose(leftDeltaPos, rightDeltaPos);
+        //Vector2d newTargetPos = lastTargetPos.sub(newRobotPose.displacement);
+        Pose newRobotPose = new Pose(RobotState.getInstance().getLatestFieldToVehicle().getPosition(), Math.toRadians(Pigeon.getInstance().getHeadingDeg()));
+        Vector2d newTargetPos = FieldDimensions.portPos.sub(newRobotPose.getPosition());
+        newTargetPos = newTargetPos.rotate(-newRobotPose.getHeading());
         return newTargetPos;
     }
 
@@ -187,15 +193,6 @@ public class ShooterCalcs {
             this.angle = angle;
             this.radius = radius;
             this.length = angle*radius;
-        }
-    }
-
-    static class Pose {
-        Vector2d displacement;
-        double angle;
-        public Pose(Vector2d displacement, double angle){
-            this.displacement = displacement;
-            this.angle = angle;
         }
     }
 

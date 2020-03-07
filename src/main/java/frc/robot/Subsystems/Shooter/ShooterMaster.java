@@ -114,7 +114,7 @@ public class ShooterMaster extends AdvancedSubsystem {
 
         //Check conditions for each:
         if(!limelight.getIsTargetFound() && cDecision.id != iShoot && controls.getBoolean(DriverControlsEnum.SHOOT)){
-            search.vote();
+            //search.vote();
         }
         if(controls.getBoolean(DriverControlsEnum.SHOOT)){
             shoot.vote();
