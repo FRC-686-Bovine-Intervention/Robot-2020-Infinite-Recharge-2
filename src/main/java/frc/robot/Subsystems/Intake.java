@@ -25,7 +25,7 @@ public class Intake extends Subsystem{
     private TalonSRX intakeMotor;
     private DoubleSolenoid mainSolenoids, secondarySolenoids;
 
-    private double reverseCurrentThreshold = 25;
+    private double reverseCurrentThreshold = -25;
     private double reverseTime = 1;
     private double reverseStartTime = -1;
 
@@ -46,6 +46,7 @@ public class Intake extends Subsystem{
 
     @Override
     public void run(){
+        System.out.println(intakeMotor.getStatorCurrent());
         if(controls.getBoolean(DriverControlsEnum.INTAKE)){
             deploy();
         } else if (Timer.getFPGATimestamp() - reverseStartTime >= reverseTime || reverseStartTime == -1)
@@ -74,7 +75,7 @@ public class Intake extends Subsystem{
     }
 
     public void deploy(){
-        if (intakeMotor.getStatorCurrent() >= reverseCurrentThreshold)
+        if (intakeMotor.getStatorCurrent() <= reverseCurrentThreshold)
         {
             reverseStartTime = Timer.getFPGATimestamp();
         }

@@ -3,8 +3,6 @@ package frc.robot.ControlStructures;
 import java.util.ArrayList;
 import java.util.List;
 
-import frc.robot.util.FallingEdgeDetector;
-
 public class SubsystemController{
 
     private List<Subsystem> subsystems = new ArrayList<Subsystem>();
@@ -55,13 +53,12 @@ public class SubsystemController{
             }
             calibrationStarted = true;
         } else {
+            calibrateFinished = true;
             for(AdvancedSubsystem advancedSubsystem : advancedSubsystems){
                 if(!advancedSubsystem.calibrateFinished()){
                     advancedSubsystem.calibrateLoop();
                     calibrateFinished = false;
-                } else {
-                    calibrateFinished = true;
-                }
+                } 
             }
         }
     }

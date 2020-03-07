@@ -7,6 +7,8 @@ import frc.robot.ControlStructures.AdvancedSubsystem;
 import frc.robot.Controls.Controls;
 import frc.robot.Controls.DriverControlsEnum;
 import frc.robot.Subsystems.Drivetrain;
+import frc.robot.Subsystems.Lift;
+import frc.robot.Subsystems.Lift.PTOStates;
 import frc.robot.Subsystems.Shooter.Limelight.LedMode;
 import frc.robot.util.Vector2d;
 
@@ -45,14 +47,15 @@ public class ShooterMaster extends AdvancedSubsystem {
         }
     }
 
-    private static final int iSearch = 1, iShoot = 2, iIdle = 3, iDebug = 4;
+    private static final int iSearch = 1, iShoot = 2, iIdle = 3, iDebug = 4, iClimb = 5;
 
     Decision debug = new Decision(iDebug, 1);
-    Decision search = new Decision(iSearch, 2);
-    Decision shoot = new Decision(iShoot, 3);
-    Decision idle = new Decision(iIdle, 4);
+    Decision climbing = new Decision(iDebug, 2);
+    Decision search = new Decision(iSearch, 3);
+    Decision shoot = new Decision(iShoot, 4);
+    Decision idle = new Decision(iIdle, 5);
 
-    Decision[] options = {search, shoot, idle, debug};
+    Decision[] options = {search, shoot, idle, debug, climbing};
 
     private Decision cDecision = idle;
     
@@ -119,6 +122,9 @@ public class ShooterMaster extends AdvancedSubsystem {
         if(SmartDashboard.getBoolean("Shooter/Debug", false)){
             debug.vote();
         }
+        if(Lift.getInstance().getPTOState() == PTOStates.LIFT_ENABLED){
+            climbing.vote();
+        }
 
         //Default:
         idle.vote();
@@ -149,7 +155,7 @@ public class ShooterMaster extends AdvancedSubsystem {
                     limelight.setLEDMode(LedMode.kOff);
                 }
 
-                if(SmartDashboard.getBoolean("Shooter/Debug/Autotargeting", false)){
+                if(SmartDashboard.getBoolean("Shooter/Debug/Autotargeting", false) && limelight.getIsTargetFound()){
                     double cTurretPos = turret.getSensedPosition();
                     double cHorizRad = limelight.getTargetHorizontalAngleRad();
                     turret.setPosition(cTurretPos +cHorizRad/2.0);
@@ -234,6 +240,7 @@ public class ShooterMaster extends AdvancedSubsystem {
 
 
             case iIdle:
+            case iClimb:
                 limelight.setLEDMode(LedMode.kOff);
                 turret.setPosition(0.0);
                 hood.setPosition(0.0);
@@ -268,11 +275,14 @@ public class ShooterMaster extends AdvancedSubsystem {
 
     @Override
     public void calibrateLoop() {
-        hood.calibrate();
-        turret.calibrate();
+        System.out.println(Lift.getInstance().calibrateFinished());
+        if(Lift.getInstance().calibrateFinished()){
+            hood.calibrate();
+            turret.calibrate();
 
-        if(hood.calibrationFinished() && turret.calibrationFinished()){
-            calibrationComplete = true;
+            if(hood.calibrationFinished() && turret.calibrationFinished()){
+                calibrationComplete = true;
+            }
         }
     }
 

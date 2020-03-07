@@ -3,6 +3,7 @@ package frc.robot.Subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.ControlStructures.AdvancedSubsystem;
@@ -41,7 +42,9 @@ public class Lift extends AdvancedSubsystem{
 
     private boolean calibrationComplete = false;
     private boolean leftCalibrated = false, rightCalibrated = false;
-    private static final double calibrationTolerance = 0.1; //Rads/sec
+    private static final double calibrationTolerance = 0.6; //Rads/sec
+    private double calibrationStartTime = 0;
+    private static final double calibrationWaitDuration = 0.25; 
 
 
     public Lift(){
@@ -102,28 +105,30 @@ public class Lift extends AdvancedSubsystem{
         leftCalibrated = false;
         rightCalibrated = false;
         calibrationComplete = false;
-        unlockLift();
+        calibrationStartTime = Timer.getFPGATimestamp();
         shiftToLift();
-        Drivetrain.getInstance().leftMaster.set(ControlMode.PercentOutput, -0.125);
-        Drivetrain.getInstance().rightMaster.set(ControlMode.PercentOutput, -0.125);
+        Drivetrain.getInstance().leftMaster.set(ControlMode.PercentOutput, 0.1);
+        Drivetrain.getInstance().rightMaster.set(ControlMode.PercentOutput, 0.1);
     }
 
     @Override
     public void calibrateLoop() {
-        if(!leftCalibrated && Drivetrain.getInstance().getSensedRPSLeft() <= calibrationTolerance){
-            leftCalibrated = true;
-            Drivetrain.getInstance().leftMaster.set(ControlMode.Velocity, 0.0);
-        }
+        if(Timer.getFPGATimestamp()-calibrationStartTime > calibrationWaitDuration){
+            if(!leftCalibrated && Math.abs(Drivetrain.getInstance().getSensedRPSLeft()) <= calibrationTolerance){
+                leftCalibrated = true;
+                Drivetrain.getInstance().leftMaster.set(ControlMode.Velocity, 0.0);
+            }
 
-        if(!rightCalibrated && Drivetrain.getInstance().getSensedRPSRight() <= calibrationTolerance){
-            rightCalibrated = true;
-            Drivetrain.getInstance().rightMaster.set(ControlMode.Velocity, 0.0);
-        }
+            if(!rightCalibrated && Math.abs(Drivetrain.getInstance().getSensedRPSRight()) <= calibrationTolerance){
+                rightCalibrated = true;
+                Drivetrain.getInstance().rightMaster.set(ControlMode.Velocity, 0.0);
+            }
 
-        if(leftCalibrated && rightCalibrated){
-            calibrationComplete = true;
-            lockLift();
-            shiftToDrive();
+            if(leftCalibrated && rightCalibrated){
+                Drivetrain.getInstance().zeroSensors();
+                calibrationComplete = true;
+                shiftToDrive();
+            }
         }
     }
 
@@ -136,6 +141,7 @@ public class Lift extends AdvancedSubsystem{
 
 
     public void lockLift(){
+        shiftToDrive();
         lockSolenoids.set(lockVal);
     }
 
