@@ -33,7 +33,7 @@ public class ConveyorBelt extends Subsystem {
 
     private RisingEdgeDetector shootEdge = new RisingEdgeDetector();
 
-    private static final double reverseTime = 0.5;
+    private static final double reverseTime = 0.125;
     private double reverseStartTime = 0;
 
     private boolean shooterChecked = false;
@@ -57,8 +57,8 @@ public class ConveyorBelt extends Subsystem {
         vBeltLeft.configFactoryDefault();
         vBeltRight.configFactoryDefault();
 
-        towerMaster.setInverted(true);
-        towerSlave.setInverted(false);
+        towerMaster.setInverted(false);
+        towerSlave.setInverted(true);
         vBeltLeft.setInverted(true);
         vBeltRight.setInverted(true);
 

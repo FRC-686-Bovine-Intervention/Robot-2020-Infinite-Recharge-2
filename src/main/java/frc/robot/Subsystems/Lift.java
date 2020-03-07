@@ -141,7 +141,6 @@ public class Lift extends AdvancedSubsystem{
 
 
     public void lockLift(){
-        shiftToDrive();
         lockSolenoids.set(lockVal);
     }
 
