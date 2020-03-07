@@ -16,17 +16,10 @@ import frc.robot.Subsystems.Shooter.ShooterMaster;
 
 
 public class Robot extends TimedRobot {
-  // Drivetrain drivetrain;
-  // Lift lift;
-  // Intake intake;
-  // ConveyorBelt conveyorBelt;
-  // Kickers kickers;
-  ShooterMaster shooter;  
+  SubsystemController subsystemController;
   UsbCamera ClimbCam = CameraServer.getInstance().startAutomaticCapture(); 
   CvSink cvSink = CameraServer.getInstance().getVideo();
   CvSource outputStream = CameraServer.getInstance().putVideo("ClimbCam", 640, 480);
-
-  double startTime = 0;
   
 
   @Override
@@ -71,7 +64,6 @@ public class Robot extends TimedRobot {
     subsystemController.onTeleLoop();
     subsystemController.updateSmartDashboard(); 
   }
-
 
   @Override
   public void testPeriodic() {
