@@ -128,6 +128,10 @@ public class Drivetrain extends Subsystem{
         rightMaster.configAllowableClosedloopError(Constants.kSlotIdxSpeed, toleranceVel, Constants.kTalonTimeoutMs);
 
 
+        leftMaster.configClosedloopRamp(0.375, Constants.kTalonTimeoutMs);
+        rightMaster.configClosedloopRamp(0.375, Constants.kTalonTimeoutMs);
+
+
         leftSlave.follow(leftMaster);
         rightSlave.follow(rightMaster);
 

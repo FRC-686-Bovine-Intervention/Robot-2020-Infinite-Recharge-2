@@ -8,8 +8,8 @@ import frc.robot.Subsystems.ConveyorBelt;
 public class Pigeon extends GyroBase 
 {
 	// singleton class
-        private static GyroBase instance = null;
-        public static GyroBase getInstance() 
+        private static Pigeon instance = null;
+        public static Pigeon getInstance() 
         { 
             if (instance == null) {
                 instance = new Pigeon();
