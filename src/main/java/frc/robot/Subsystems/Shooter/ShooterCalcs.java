@@ -2,6 +2,7 @@ package frc.robot.Subsystems.Shooter;
 
 import frc.robot.Constants;
 import frc.robot.Subsystems.Drivetrain.LinearAngularSpeed;
+import frc.robot.util.Pose;
 import frc.robot.util.Vector2d;
 
 public class ShooterCalcs {
@@ -37,8 +38,8 @@ public class ShooterCalcs {
 
     public static Vector2d getNewTargetPos(Vector2d lastTargetPos, double leftDeltaPos, double rightDeltaPos){
         Pose newRobotPose = getNewRobotPose(leftDeltaPos, rightDeltaPos);
-        Vector2d newTargetPos = lastTargetPos.sub(newRobotPose.displacement);
-        newTargetPos = newTargetPos.rotate(-newRobotPose.angle);
+        Vector2d newTargetPos = lastTargetPos.sub(newRobotPose.getPosition());
+        newTargetPos = newTargetPos.rotate(-newRobotPose.getHeading());
         return newTargetPos;
     }
 
@@ -181,17 +182,4 @@ public class ShooterCalcs {
             this.length = angle*radius;
         }
     }
-
-    static class Pose {
-        Vector2d displacement;
-        double angle;
-        public Pose(Vector2d displacement, double angle){
-            this.displacement = displacement;
-            this.angle = angle;
-        }
-    }
-
-
-
-
 }
