@@ -1,5 +1,10 @@
 package frc.robot;
 
+import edu.wpi.cscore.CvSink;
+import edu.wpi.cscore.CvSource;
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.ControlStructures.SubsystemController;
 import frc.robot.Subsystems.ConveyorBelt;
@@ -9,8 +14,19 @@ import frc.robot.Subsystems.Kickers;
 import frc.robot.Subsystems.Lift;
 import frc.robot.Subsystems.Shooter.ShooterMaster;
 
-public class Robot extends TimedRobot { 
-  SubsystemController subsystemController = new SubsystemController();
+
+public class Robot extends TimedRobot {
+  // Drivetrain drivetrain;
+  // Lift lift;
+  // Intake intake;
+  // ConveyorBelt conveyorBelt;
+  // Kickers kickers;
+  ShooterMaster shooter;  
+  UsbCamera ClimbCam = CameraServer.getInstance().startAutomaticCapture(); 
+  CvSink cvSink = CameraServer.getInstance().getVideo();
+  CvSource outputStream = CameraServer.getInstance().putVideo("ClimbCam", 640, 480);
+
+  double startTime = 0;
   
 
   @Override
