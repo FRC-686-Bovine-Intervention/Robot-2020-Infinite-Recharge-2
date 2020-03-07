@@ -94,7 +94,7 @@ public class ShooterMaster extends AdvancedSubsystem {
         SmartDashboard.putBoolean("Shooter/Debug/Autotargeting", false);
         SmartDashboard.putNumber("Shooter/Debug/HoodPosition", 0);
         SmartDashboard.putNumber("Shooter/Debug/TurretPosition", 0);
-        SmartDashboard.putNumber("Shooter/Debug/FlywheelRPS", 0);
+        SmartDashboard.putNumber("Shooter/Debug/FlywheelRPM", 0);
         SmartDashboard.putBoolean("Shooter/Debug/Limelight", false);
     }
 
@@ -275,7 +275,6 @@ public class ShooterMaster extends AdvancedSubsystem {
 
     @Override
     public void calibrateLoop() {
-        System.out.println(Lift.getInstance().calibrateFinished());
         if(Lift.getInstance().calibrateFinished()){
             hood.calibrate();
             turret.calibrate();
