@@ -22,11 +22,6 @@ public class Lift extends AdvancedSubsystem{
     }
 
     private Controls controls;
-    public static TalonSRX cameraServo;
-    public int servoPort = 9;
-    public int frontDegPos = 90;
-    public int climbDegPos = 180;
-
 
     private Solenoid ptoSolenoids, lockSolenoids; 
 
@@ -51,7 +46,6 @@ public class Lift extends AdvancedSubsystem{
 
     public Lift(){
         controls = Controls.getInstance();
-        cameraServo = new TalonSRX(servoPort);
 
         ptoSolenoids = new Solenoid(Constants.kPCMID, Constants.kPTOSolenoidChannel);
         lockSolenoids = new Solenoid(Constants.kPCMID, Constants.kLiftLockSolenoidChannel);
@@ -73,10 +67,8 @@ public class Lift extends AdvancedSubsystem{
             if(ptoEdge.update(controls.getBoolean(DriverControlsEnum.TOGGLE_PTO))){
                 if(ptoState == PTOStates.DRIVE_ENABLED){
                     shiftToLift();
-                    cameraServo.setSelectedSensorPosition(climbDegPos);
                 } else {
                     shiftToDrive();
-                    cameraServo.setSelectedSensorPosition(frontDegPos);
                 }
             }
 
@@ -102,8 +94,6 @@ public class Lift extends AdvancedSubsystem{
     public void updateSmartDashboard() {
 
     }
-
-    
 
     @Override
     public void calibrateInit() {
@@ -139,9 +129,6 @@ public class Lift extends AdvancedSubsystem{
     public boolean calibrateFinished() {
         return calibrationComplete;
     }
-
-
-
 
     public void lockLift(){
         lockSolenoids.set(lockVal);
