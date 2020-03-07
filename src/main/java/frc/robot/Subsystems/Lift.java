@@ -8,7 +8,6 @@ import frc.robot.Constants;
 import frc.robot.ControlStructures.AdvancedSubsystem;
 import frc.robot.Controls.Controls;
 import frc.robot.Controls.DriverControlsEnum;
-import frc.robot.Subsystems.Shooter.Utility;
 import frc.robot.util.RisingEdgeDetector;
 
 public class Lift extends AdvancedSubsystem{

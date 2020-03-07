@@ -1,6 +1,5 @@
 package frc.robot.Subsystems.Shooter;
 
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.ControlStructures.AdvancedSubsystem;

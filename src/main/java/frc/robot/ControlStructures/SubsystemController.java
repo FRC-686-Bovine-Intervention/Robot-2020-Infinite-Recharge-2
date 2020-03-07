@@ -3,8 +3,6 @@ package frc.robot.ControlStructures;
 import java.util.ArrayList;
 import java.util.List;
 
-import frc.robot.util.FallingEdgeDetector;
-
 public class SubsystemController{
 
     private List<Subsystem> subsystems = new ArrayList<Subsystem>();
