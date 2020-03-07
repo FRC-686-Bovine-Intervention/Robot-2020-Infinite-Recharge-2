@@ -27,7 +27,7 @@ public class ConveyorBelt extends Subsystem {
 
 
     private VictorSPX towerMaster, towerSlave, vBeltRight;
-    private TalonSRX vBeltLeft;
+    public TalonSRX vBeltLeft;
 
     private DigitalInput entranceSensor, exitSensor;
 
