@@ -1,6 +1,7 @@
 package frc.robot.Subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -13,6 +14,7 @@ import frc.robot.util.RisingEdgeDetector;
 public class Lift extends AdvancedSubsystem{
     private static Lift instance = null;
     public static Lift getInstance(){
+
         if(instance == null){
             instance = new Lift();
         }
@@ -20,6 +22,10 @@ public class Lift extends AdvancedSubsystem{
     }
 
     private Controls controls;
+    public static TalonSRX cameraServo;
+    public int servoPort = 9;
+    public int frontDegPos = 90;
+    public int climbDegPos = 180;
 
 
     private Solenoid ptoSolenoids, lockSolenoids; 
@@ -45,6 +51,7 @@ public class Lift extends AdvancedSubsystem{
 
     public Lift(){
         controls = Controls.getInstance();
+        cameraServo = new TalonSRX(servoPort);
 
         ptoSolenoids = new Solenoid(Constants.kPCMID, Constants.kPTOSolenoidChannel);
         lockSolenoids = new Solenoid(Constants.kPCMID, Constants.kLiftLockSolenoidChannel);
@@ -66,8 +73,10 @@ public class Lift extends AdvancedSubsystem{
             if(ptoEdge.update(controls.getBoolean(DriverControlsEnum.TOGGLE_PTO))){
                 if(ptoState == PTOStates.DRIVE_ENABLED){
                     shiftToLift();
+                    cameraServo.setSelectedSensorPosition(climbDegPos);
                 } else {
                     shiftToDrive();
+                    cameraServo.setSelectedSensorPosition(frontDegPos);
                 }
             }
 
