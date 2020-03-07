@@ -10,6 +10,8 @@ import frc.robot.ControlStructures.RobotStateLoop;
 import frc.robot.ControlStructures.SubsystemController;
 import frc.robot.Subsystems.ConveyorBelt;
 import frc.robot.Subsystems.Drivetrain;
+import frc.robot.Subsystems.Intake;
+import frc.robot.Subsystems.Kickers;
 import frc.robot.Subsystems.Lift;
 import frc.robot.Subsystems.Shooter.Limelight;
 import frc.robot.Subsystems.Shooter.Limelight.LedMode;
@@ -40,8 +42,8 @@ public class Robot extends TimedRobot {
     subsystemController.addSubsystem(Drivetrain.getInstance());
     subsystemController.addSubsystem(ShooterMaster.getInstance());
     subsystemController.addSubsystem(ConveyorBelt.getInstance());
-    //subsystemController.addSubsystem(Intake.getInstance());
-    //subsystemController.addSubsystem(Kickers.getInstance());
+    subsystemController.addSubsystem(Intake.getInstance());
+    subsystemController.addSubsystem(Kickers.getInstance());
     subsystemController.addSubsystem(Lift.getInstance());
 
     subsystemController.addSubsystem(RobotStateLoop.getInstance());
