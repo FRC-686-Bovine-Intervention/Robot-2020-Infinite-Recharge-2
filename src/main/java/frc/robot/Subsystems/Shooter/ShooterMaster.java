@@ -4,12 +4,16 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.ControlStructures.AdvancedSubsystem;
+import frc.robot.ControlStructures.RobotState;
 import frc.robot.Controls.Controls;
 import frc.robot.Controls.DriverControlsEnum;
 import frc.robot.Subsystems.Drivetrain;
 import frc.robot.Subsystems.Lift;
 import frc.robot.Subsystems.Lift.PTOStates;
 import frc.robot.Subsystems.Shooter.Limelight.LedMode;
+import frc.robot.sensors.Pigeon;
+import frc.robot.util.Pose;
+import frc.robot.util.RisingEdgeDetector;
 import frc.robot.util.Vector2d;
 
 public class ShooterMaster extends AdvancedSubsystem {
@@ -51,8 +55,8 @@ public class ShooterMaster extends AdvancedSubsystem {
 
     Decision debug = new Decision(iDebug, 1);
     Decision climbing = new Decision(iDebug, 2);
-    Decision search = new Decision(iSearch, 3);
-    Decision shoot = new Decision(iShoot, 4);
+    Decision search = new Decision(iSearch, 4);
+    Decision shoot = new Decision(iShoot, 3);
     Decision idle = new Decision(iIdle, 5);
 
     Decision[] options = {search, shoot, idle, debug, climbing};
@@ -66,13 +70,18 @@ public class ShooterMaster extends AdvancedSubsystem {
     private static final double sweepPeriod = 1.75;
     private static final double sweepRange = Math.PI/2.0;
     private boolean sweepFirstRun = true;
+    private double targetLossStart = 0;
+    private static final double targetLossMax = 1.5;
+    private RisingEdgeDetector targetLossEdge = new RisingEdgeDetector();
 
 
     //Shooting variables:
-    //private double lastTargetPos = 0;
-    private double lastDrivePosLeft = 0;
-    private double lastDrivePosRight = 0;
     private Vector2d runningTargetPos = null, lastTargetPos = null;
+
+    private double runningVariation = 1;
+    private static final double variationTolerance = 24; //inches. Target "radius"
+    private static final double variationAlpha = (1.0/2.0);
+    
 
 
 
@@ -107,16 +116,47 @@ public class ShooterMaster extends AdvancedSubsystem {
 
     @Override
     public void run(){
+        //===========================
+        //Target tracking:
+        //===========================
+        Vector2d sensedTargetPos;
+        if(limelight.getIsTargetFound()){
+            sensedTargetPos = ShooterCalcs.getTargetDisplacement(runningTargetPos, limelight.getTargetVerticalAngleRad(),
+                                limelight.getTargetHorizontalAngleRad(), turret.getSensedPosition());
+            double variationError = RobotState.getInstance().getLatestFieldToVehicle().getPosition().sub(sensedTargetPos).length();
+            runningVariation = ShooterCalcs.expSmoothing(runningVariation, variationError, variationAlpha);
+        } else {
+            sensedTargetPos = ShooterCalcs.getNewTargetPos();
+        }
+        //Averaging:
+        if(runningTargetPos == null){
+            //First time through
+            runningTargetPos = sensedTargetPos;
+        } else {
+            runningTargetPos = runningTargetPos.expAverage(sensedTargetPos, ShooterCalcs.targetSmoothing);
+        }
 
+        if(limelight.getIsTargetFound()){
+            //Updating robot pos based on limelight sensing
+            Pose newPose = ShooterCalcs.getRobotPoseFromTargetPos(runningTargetPos, Pigeon.getInstance().getHeadingDeg());
+            RobotState.getInstance().addFieldToVehicleObservation(Timer.getFPGATimestamp(), newPose);
+        }
+
+
+
+
+        //=============================
+        //Decision Making:
+        //=============================
         for(Decision option : options){
             option.clear();
         }
 
         //Check conditions for each:
-        if(!limelight.getIsTargetFound() && cDecision.id != iShoot && controls.getBoolean(DriverControlsEnum.SHOOT)){
-            //search.vote();
+        if(controls.getBoolean(DriverControlsEnum.SEARCH) || controls.getBoolean(DriverControlsEnum.SHOOT)){
+            search.vote();
         }
-        if(controls.getBoolean(DriverControlsEnum.SHOOT)){
+        if(controls.getBoolean(DriverControlsEnum.SHOOT) && runningVariation <= variationTolerance){
             shoot.vote();
         }
         if(SmartDashboard.getBoolean("Shooter/Debug", false)){
@@ -146,7 +186,10 @@ public class ShooterMaster extends AdvancedSubsystem {
         cDecision = bestOption;
 
 
-        //Behavior:
+
+        //====================================
+        //Carrying out state behaviors:
+        //====================================
         switch(cDecision.id){
             case iDebug:
                 if(SmartDashboard.getBoolean("Shooter/Debug/Limelight", false)){
@@ -170,17 +213,24 @@ public class ShooterMaster extends AdvancedSubsystem {
 
             case iSearch:
                 limelight.setLEDMode(LedMode.kOn);
-
-                if(sweepFirstRun){
-                    sweepStartTime = Timer.getFPGATimestamp();
-                    sweepFirstRun = false;
+                if(targetLossEdge.update(!limelight.getIsTargetFound())){
+                    targetLossStart = Timer.getFPGATimestamp();
                 }
-                double elapsedTime = Timer.getFPGATimestamp()-sweepStartTime;
-                double position = Math.sin((elapsedTime/sweepPeriod)*Math.PI)*sweepRange;
-                turret.setPosition(position);
 
-                flywheel.setRPS(0.0);
-                hood.setPosition(0.0);
+                if(!limelight.getIsTargetFound() && Timer.getFPGATimestamp()-targetLossStart > targetLossMax){
+                    if(sweepFirstRun){
+                        sweepStartTime = Timer.getFPGATimestamp();
+                        sweepFirstRun = false;
+                    }
+                    double elapsedTime = Timer.getFPGATimestamp()-sweepStartTime;
+                    double position = Math.sin((elapsedTime/sweepPeriod)*Math.PI)*sweepRange;
+                    turret.setPosition(position);
+
+                    flywheel.setRPS(0.0);
+                    hood.setPosition(0.0);
+                } else {
+                    turret.setPosition((limelight.getTargetHorizontalAngleRad()/2.0)+turret.getSensedPosition());
+                }
                 break;
 
 
@@ -188,25 +238,9 @@ public class ShooterMaster extends AdvancedSubsystem {
             case iShoot:
                 limelight.setLEDMode(LedMode.kOn);
                 
-                //Determining what displacement vector will be used for the target
-                Vector2d targetPos;
-                if(limelight.getIsTargetFound()){
-                    runningTargetPos = ShooterCalcs.getTargetDisplacement(runningTargetPos, limelight.getTargetVerticalAngleRad(),
-                                     limelight.getTargetHorizontalAngleRad(), turret.getSensedPosition());
-                    targetPos = runningTargetPos;
-
-                    //Updating backup variables:
-                    lastTargetPos = runningTargetPos;
-                    lastDrivePosLeft = Drivetrain.getInstance().getSensedInchesLeft();
-                    lastDrivePosRight = Drivetrain.getInstance().getSensedInchesRight();
-                } else {
-                    targetPos = ShooterCalcs.getNewTargetPos(lastTargetPos, 
-                                    Drivetrain.getInstance().getSensedInchesLeft()- lastDrivePosLeft, Drivetrain.getInstance().getSensedInchesRight() - lastDrivePosRight);
-                }
-                
                 //Calculating information necessary for making shot along with applying lead
-                Vector2d shooterVelocity = ShooterCalcs.calcShooterLeadVelocity(targetPos, Drivetrain.getInstance().getLinearAngularSpeed());
-                double hoodPosition = ShooterCalcs.calcHoodPosition(targetPos.length());
+                Vector2d shooterVelocity = ShooterCalcs.calcShooterLeadVelocity(runningTargetPos, Drivetrain.getInstance().getLinearAngularSpeed());
+                double hoodPosition = ShooterCalcs.calcHoodPosition(runningTargetPos.length());
 
                 //Respond physically
                 flywheel.setRPS(shooterVelocity.length());
