@@ -12,6 +12,7 @@ import frc.robot.ControlStructures.Subsystem;
 import frc.robot.Controls.Controls;
 import frc.robot.Controls.DriverControlsEnum;
 import frc.robot.Subsystems.Shooter.Flywheel;
+import frc.robot.Subsystems.Shooter.ShooterMaster;
 import frc.robot.util.RisingEdgeDetector;
 
 public class ConveyorBelt extends Subsystem {
@@ -90,7 +91,7 @@ public class ConveyorBelt extends Subsystem {
                     turnOnTower();
                     turnOnVBelt();
                 } else {
-                    shooterChecked = Flywheel.getInstance().nearTarget();
+                    shooterChecked = ShooterMaster.getInstance().readyToShoot();
                     if(Timer.getFPGATimestamp()-reverseStartTime >= reverseTime){
                         stopTower();
                         stopVBelt();

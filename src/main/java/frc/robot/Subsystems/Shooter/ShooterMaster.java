@@ -127,6 +127,7 @@ public class ShooterMaster extends AdvancedSubsystem {
             runningVariation = ShooterCalcs.expSmoothing(runningVariation, variationError, variationAlpha);
         } else {
             sensedTargetPos = ShooterCalcs.getNewTargetPos();
+            runningVariation = 0;
         }
         //Averaging:
         if(runningTargetPos == null){
@@ -324,5 +325,10 @@ public class ShooterMaster extends AdvancedSubsystem {
         return calibrationComplete;
     }
     
+
+
+    public boolean readyToShoot(){
+        return runningVariation <= variationTolerance && flywheel.nearTarget();
+    }
 
 }

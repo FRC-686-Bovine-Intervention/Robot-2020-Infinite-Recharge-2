@@ -88,14 +88,6 @@ public class ShooterCalcs {
     }
 
     public static double calcShooterVelocity(double distance){
-        if(distance < dataTable[0][0]){
-            distance = dataTable[0][0];
-        }
-
-        if(distance > dataTable[dataTable.length-1][0]){
-            distance = dataTable[dataTable.length-1][0];
-        }
-
         int keyL = getLinear(distance, dataTable);
         double nominalSpeed = handleLinear(distance, dataTable[keyL][0], dataTable[keyL+1][0], dataTable[keyL][1], dataTable[keyL+1][1]);
         nominalSpeed /= 9.5493; //RPM to rps

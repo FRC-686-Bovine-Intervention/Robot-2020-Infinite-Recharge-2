@@ -63,8 +63,6 @@ public class Intake extends Subsystem{
             }
         }
 
-        System.out.println(getCurrent());
-
         if(getCurrent() >= reverseCurrentThreshold){
             reverseStartTime = Timer.getFPGATimestamp();
         }
