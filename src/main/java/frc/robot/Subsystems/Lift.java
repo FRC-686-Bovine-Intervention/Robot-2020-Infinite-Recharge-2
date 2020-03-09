@@ -1,6 +1,7 @@
 package frc.robot.Subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -13,6 +14,7 @@ import frc.robot.util.RisingEdgeDetector;
 public class Lift extends AdvancedSubsystem{
     private static Lift instance = null;
     public static Lift getInstance(){
+
         if(instance == null){
             instance = new Lift();
         }
@@ -20,7 +22,6 @@ public class Lift extends AdvancedSubsystem{
     }
 
     private Controls controls;
-
 
     private Solenoid ptoSolenoids, lockSolenoids; 
 
@@ -94,8 +95,6 @@ public class Lift extends AdvancedSubsystem{
 
     }
 
-    
-
     @Override
     public void calibrateInit() {
         leftCalibrated = false;
@@ -130,9 +129,6 @@ public class Lift extends AdvancedSubsystem{
     public boolean calibrateFinished() {
         return calibrationComplete;
     }
-
-
-
 
     public void lockLift(){
         lockSolenoids.set(lockVal);
