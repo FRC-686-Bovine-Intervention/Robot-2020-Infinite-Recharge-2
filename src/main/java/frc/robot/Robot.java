@@ -18,10 +18,8 @@ import frc.robot.Subsystems.Shooter.Flywheel;
 import frc.robot.Subsystems.Shooter.Hood;
 import frc.robot.Subsystems.Shooter.Limelight;
 import frc.robot.Subsystems.Shooter.Limelight.LedMode;
-import frc.robot.sensors.Pigeon;
-import frc.robot.util.Pose;
-import frc.robot.util.RisingEdgeDetector;
 import frc.robot.Subsystems.Shooter.ShooterMaster;
+import frc.robot.sensors.Pigeon;
 
 
 public class Robot extends TimedRobot {
