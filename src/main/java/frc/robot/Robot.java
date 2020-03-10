@@ -1,9 +1,5 @@
 package frc.robot;
 
-import edu.wpi.cscore.CvSink;
-import edu.wpi.cscore.CvSource;
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.ControlStructures.RobotState;
@@ -24,9 +20,6 @@ import frc.robot.sensors.Pigeon;
 
 public class Robot extends TimedRobot {
   SubsystemController subsystemController;
-  UsbCamera ClimbCam = CameraServer.getInstance().startAutomaticCapture(); 
-  CvSink cvSink = CameraServer.getInstance().getVideo();
-  CvSource outputStream = CameraServer.getInstance().putVideo("ClimbCam", 640, 480);
   Pigeon pigeon = Pigeon.getInstance();
 
   private double autoStartTime = 0;
