@@ -37,9 +37,9 @@ public class Hood {
     //Calibration variables:
     private boolean calibrationComplete = false;
     private double hoodLastPos = 10000;
-    private static final double hoodCalibTolerance = Math.toRadians(2);
+    private static final double hoodCalibTolerance = Math.toRadians(0.1);
     private double successfulHoodLoops = 0;
-    private static final double requiredHoodLoops = 20;
+    private static final double requiredHoodLoops = 60;
 
 
 
@@ -102,18 +102,21 @@ public class Hood {
     }
 
     public void calibrate(){
-        if(Math.abs(getSensedPosition()-hoodLastPos) <= hoodCalibTolerance){
-            successfulHoodLoops++;
-        } else {
-            successfulHoodLoops = 0;
-        }
-        hoodLastPos = getSensedPosition();
-        if(successfulHoodLoops < requiredHoodLoops){
-            setPercent(-0.1825);
-        } else {
-            setPercent(0.0);
-            zeroSensor();
-            calibrationComplete = true;
+        if(!calibrationComplete){
+            if(Math.abs(getSensedPosition()-hoodLastPos) <= hoodCalibTolerance){
+                successfulHoodLoops++;
+            } else {
+                successfulHoodLoops = 0;
+            }
+            hoodLastPos = getSensedPosition();
+            if(successfulHoodLoops < requiredHoodLoops){
+                setPercent(-0.1825);
+            } else {
+                setPercent(0.0);
+                zeroSensor();
+                calibrationComplete = true;
+                setPosition(0);
+            }
         }
     }
 

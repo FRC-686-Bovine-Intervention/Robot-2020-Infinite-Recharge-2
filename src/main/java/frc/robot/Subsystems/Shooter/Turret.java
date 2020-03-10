@@ -91,16 +91,16 @@ public class Turret {
 
     public void calibrateStart(){
         calibrationComplete = false;
-        
     }
 
     public void calibrate(){
-        if(hallEffect.get()){
+        if(hallEffect.get() && !calibrationComplete){
             setPercent(-0.1825);
         } else {
             setPercent(0.0);
             zeroWithInit(-3);
             calibrationComplete = true;
+            setPosition(0);
         }
 
     }

@@ -12,6 +12,7 @@ import frc.robot.ControlStructures.Subsystem;
 import frc.robot.Controls.Controls;
 import frc.robot.Controls.DriverControlsEnum;
 import frc.robot.Subsystems.Shooter.Flywheel;
+import frc.robot.Subsystems.Shooter.ShooterMaster;
 import frc.robot.util.RisingEdgeDetector;
 
 public class ConveyorBelt extends Subsystem {
@@ -27,13 +28,13 @@ public class ConveyorBelt extends Subsystem {
 
 
     private VictorSPX towerMaster, towerSlave, vBeltRight;
-    private TalonSRX vBeltLeft;
+    public TalonSRX vBeltLeft;
 
     private DigitalInput entranceSensor, exitSensor;
 
     private RisingEdgeDetector shootEdge = new RisingEdgeDetector();
 
-    private static final double reverseTime = 0.5;
+    private static final double reverseTime = 0.125;
     private double reverseStartTime = 0;
 
     private boolean shooterChecked = false;
@@ -57,8 +58,8 @@ public class ConveyorBelt extends Subsystem {
         vBeltLeft.configFactoryDefault();
         vBeltRight.configFactoryDefault();
 
-        towerMaster.setInverted(true);
-        towerSlave.setInverted(false);
+        towerMaster.setInverted(false);
+        towerSlave.setInverted(true);
         vBeltLeft.setInverted(true);
         vBeltRight.setInverted(true);
 
@@ -90,7 +91,7 @@ public class ConveyorBelt extends Subsystem {
                     turnOnTower();
                     turnOnVBelt();
                 } else {
-                    shooterChecked = Flywheel.getInstance().nearTarget();
+                    shooterChecked = ShooterMaster.getInstance().readyToShoot();
                     if(Timer.getFPGATimestamp()-reverseStartTime >= reverseTime){
                         stopTower();
                         stopVBelt();

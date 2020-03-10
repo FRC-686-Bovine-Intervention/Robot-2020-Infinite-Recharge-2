@@ -10,6 +10,7 @@ import frc.robot.Constants;
 import frc.robot.ControlStructures.Subsystem;
 import frc.robot.Controls.Controls;
 import frc.robot.Controls.DriverControlsEnum;
+import frc.robot.util.RisingEdgeDetector;
 
 public class Intake extends Subsystem{
     private static Intake instance = null;
@@ -25,19 +26,20 @@ public class Intake extends Subsystem{
     private TalonSRX intakeMotor;
     private DoubleSolenoid mainSolenoids, secondarySolenoids;
 
-    private double reverseCurrentThreshold = 25;
-    private double reverseTime = 1;
+    private double reverseCurrentThreshold = 45;
+    private double reverseTime = 0.25;
     private double reverseStartTime = -1;
 
     public Intake(){
         controls = Controls.getInstance();
 
         intakeMotor = new TalonSRX(Constants.kIntakeTalonId);
+        intakeMotor.configFactoryDefault();
         intakeMotor.setInverted(true);
+        intakeMotor.configOpenloopRamp(0.075, Constants.kTalonTimeoutMs);
         mainSolenoids = new DoubleSolenoid(Constants.kPCMID, Constants.kMainSolenoidFChannel, Constants.kMainSolenoidRChannel);
         secondarySolenoids = new DoubleSolenoid(Constants.kPCMID, Constants.kSecondarySolenoidFChannel, Constants.kSecondarySolenoidRChannel);
         
-        intakeMotor.configFactoryDefault();
     }
 
 
@@ -46,12 +48,23 @@ public class Intake extends Subsystem{
 
     @Override
     public void run(){
+        double reverseElapsedTime = Timer.getFPGATimestamp()-reverseStartTime;
+
         if(controls.getBoolean(DriverControlsEnum.INTAKE)){
             deploy();
-        } else if (Timer.getFPGATimestamp() - reverseStartTime >= reverseTime || reverseStartTime == -1)
-        {
-            retract();
-            reverseStartTime = -1;
+            if(reverseElapsedTime < reverseTime){
+                setIntakePower(-Constants.kIntakePower);
+            } else {
+                setIntakePower(Constants.kIntakePower);
+            }
+        } else {
+            if(reverseElapsedTime > reverseTime){
+                retract();
+            }
+        }
+
+        if(getCurrent() >= reverseCurrentThreshold){
+            reverseStartTime = Timer.getFPGATimestamp();
         }
     }
 
@@ -74,20 +87,6 @@ public class Intake extends Subsystem{
     }
 
     public void deploy(){
-        if (intakeMotor.getStatorCurrent() >= reverseCurrentThreshold)
-        {
-            reverseStartTime = Timer.getFPGATimestamp();
-        }
-
-        if (Timer.getFPGATimestamp() - reverseStartTime >= reverseTime || reverseStartTime == -1)
-        {
-            intakeMotor.set(ControlMode.PercentOutput, Constants.kIntakePower);
-            reverseStartTime = -1;
-        }
-        else
-        {
-            intakeMotor.set(ControlMode.PercentOutput, -Constants.kIntakePower);
-        }
         mainSolenoids.set(Value.kReverse);
         secondarySolenoids.set(Value.kReverse);
     }
@@ -96,6 +95,10 @@ public class Intake extends Subsystem{
         intakeMotor.set(ControlMode.PercentOutput, 0.0);
         mainSolenoids.set(Value.kForward);
         secondarySolenoids.set(Value.kForward);
+    }
+
+    public double getCurrent(){
+        return intakeMotor.getStatorCurrent();
     }
 
 }

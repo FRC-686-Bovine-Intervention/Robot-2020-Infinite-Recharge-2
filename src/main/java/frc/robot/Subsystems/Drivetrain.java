@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.ControlStructures.Subsystem;
 import frc.robot.Controls.Controls;
@@ -41,11 +42,14 @@ public class Drivetrain extends Subsystem{
     private static final double encoderUnitsPerRevRight = 23763.0;
 
 
+    public static final double extensionTolerance = 2;
 
 
     //Physical parameters
     public static final double wheelDiameter = 6.0; //inches 
     public static final double drivetrainWidth = 30.0; //inches 
+    public static final double maxExtension = 230; //Arbitrary 
+
 
 
 
@@ -124,8 +128,14 @@ public class Drivetrain extends Subsystem{
         rightMaster.configAllowableClosedloopError(Constants.kSlotIdxSpeed, toleranceVel, Constants.kTalonTimeoutMs);
 
 
+        leftMaster.configClosedloopRamp(0.375, Constants.kTalonTimeoutMs);
+        rightMaster.configClosedloopRamp(0.375, Constants.kTalonTimeoutMs);
+
+
         leftSlave.follow(leftMaster);
         rightSlave.follow(rightMaster);
+
+        SmartDashboard.putBoolean("Drivetrain/ZeroWheelPos", false);
     }
 
     
@@ -136,6 +146,11 @@ public class Drivetrain extends Subsystem{
 
     @Override
     public void run(){
+        if(SmartDashboard.getBoolean("Drivetrain/ZeroWheelPos", false)){
+            leftMaster.setSelectedSensorPosition(0, Constants.kTalonPidIdx, Constants.kTalonTimeoutMs);
+            rightMaster.setSelectedSensorPosition(0, Constants.kTalonPidIdx, Constants.kTalonTimeoutMs);
+
+        }
         double leftPercent, rightPercent, IPSLeft, IPSRight;
         if(Lift.getInstance().getPTOState() == PTOStates.DRIVE_ENABLED){
             leftPercent = (controls.getYAxis() +controls.getXAxis())/2.0;
@@ -143,7 +158,20 @@ public class Drivetrain extends Subsystem{
             IPSLeft = leftPercent*144;
             IPSRight = rightPercent*144;
         } else if(Lift.getInstance().getPTOState() == PTOStates.LIFT_ENABLED){
-            IPSRight = IPSLeft = controls.getYAxis()*144;
+            double avgExtension = -(getSensedInchesLeft()+getSensedInchesRight()/2.0);
+            if((avgExtension < maxExtension || controls.getYAxis() < 0) && (avgExtension > 0 || controls.getYAxis() > 0)){
+                //Negative IPS makes lift go up
+                double error = getSensedInchesRight()-getSensedInchesLeft();
+                double baseIPS = -controls.getYAxis()*144;
+                if(Math.abs(error) > extensionTolerance){
+                    IPSRight = -(error*2.0) + baseIPS;
+                    IPSLeft = (error*2.0) + baseIPS;
+                } else {
+                    IPSRight = IPSLeft = baseIPS;
+                }
+            } else {
+                IPSLeft = IPSRight = 0;
+            }
         } else {
             IPSLeft = IPSRight = 0;
         }
@@ -152,11 +180,14 @@ public class Drivetrain extends Subsystem{
 
     @Override
     public void zeroSensors() {
-
+        leftMaster.setSelectedSensorPosition(0, Constants.kTalonPidIdx, Constants.kTalonTimeoutMs);
+        rightMaster.setSelectedSensorPosition(0, Constants.kTalonPidIdx, Constants.kTalonTimeoutMs);
     }
 
     @Override
     public void updateSmartDashboard() {
+        SmartDashboard.putNumber("Drivetrain/InchesLeft", getSensedInchesLeft());
+        SmartDashboard.putNumber("Drivetrain/InchesRight", getSensedInchesRight());
 
     }
 
@@ -223,8 +254,8 @@ public class Drivetrain extends Subsystem{
 
 
 
-    class WheelSpeed {
-        double leftSpeed, rightSpeed;
+    public class WheelSpeed {
+        public double leftSpeed, rightSpeed;
         public WheelSpeed(double leftSpeed, double rightSpeed){
             this.leftSpeed = leftSpeed;
             this.rightSpeed = rightSpeed;

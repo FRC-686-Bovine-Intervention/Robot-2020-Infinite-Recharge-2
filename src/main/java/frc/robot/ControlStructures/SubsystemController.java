@@ -53,13 +53,12 @@ public class SubsystemController{
             }
             calibrationStarted = true;
         } else {
+            calibrateFinished = true;
             for(AdvancedSubsystem advancedSubsystem : advancedSubsystems){
                 if(!advancedSubsystem.calibrateFinished()){
                     advancedSubsystem.calibrateLoop();
                     calibrateFinished = false;
-                } else {
-                    calibrateFinished = true;
-                }
+                } 
             }
         }
     }

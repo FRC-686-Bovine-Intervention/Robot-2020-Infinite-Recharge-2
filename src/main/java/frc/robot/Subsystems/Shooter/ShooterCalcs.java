@@ -1,7 +1,11 @@
 package frc.robot.Subsystems.Shooter;
 
 import frc.robot.Constants;
+import frc.robot.FieldDimensions;
+import frc.robot.ControlStructures.RobotState;
 import frc.robot.Subsystems.Drivetrain.LinearAngularSpeed;
+import frc.robot.sensors.Pigeon;
+import frc.robot.util.Pose;
 import frc.robot.util.Vector2d;
 
 public class ShooterCalcs {
@@ -13,7 +17,7 @@ public class ShooterCalcs {
         {49,2750,22},
         {105,3000,35},
         {189,4000,45},
-        {265,4750,47},
+        {265,4750,47}
     };
 
     //Physical Variables =====================================
@@ -27,6 +31,17 @@ public class ShooterCalcs {
     public static final double shooterWheelRadius = 3;
 
 
+
+
+
+
+    public static Pose getRobotPoseFromTargetPos(Vector2d sensedTargetPos, double robotHeadingDeg){
+        sensedTargetPos = sensedTargetPos.rotate(Math.toRadians(robotHeadingDeg)); //Adjusting to global values
+        Vector2d robotPos = FieldDimensions.portPos.sub(sensedTargetPos);
+        Pose robotPose = new Pose(robotPos, Math.toRadians(robotHeadingDeg));
+        return robotPose;
+    }
+
     /**
      * Ay what up
      * @param lastTargetPos
@@ -35,10 +50,12 @@ public class ShooterCalcs {
      * @return The target displacement vector relative to the robot's front
      */
 
-    public static Vector2d getNewTargetPos(Vector2d lastTargetPos, double leftDeltaPos, double rightDeltaPos){
-        Pose newRobotPose = getNewRobotPose(leftDeltaPos, rightDeltaPos);
-        Vector2d newTargetPos = lastTargetPos.sub(newRobotPose.displacement);
-        newTargetPos = newTargetPos.rotate(-newRobotPose.angle);
+    public static Vector2d getNewTargetPos(){
+        //Pose newRobotPose = getNewRobotPose(leftDeltaPos, rightDeltaPos);
+        //Vector2d newTargetPos = lastTargetPos.sub(newRobotPose.displacement);
+        Pose newRobotPose = new Pose(RobotState.getInstance().getLatestFieldToVehicle().getPosition(), Math.toRadians(Pigeon.getInstance().getHeadingDeg()));
+        Vector2d newTargetPos = FieldDimensions.portPos.sub(newRobotPose.getPosition());
+        newTargetPos = newTargetPos.rotate(-newRobotPose.getHeading());
         return newTargetPos;
     }
 
@@ -128,15 +145,7 @@ public class ShooterCalcs {
         detectedTargetPos = detectedTargetPos.rotate(-Math.PI/2.0); //Forward is considered at 90 degrees when sensed but should be 0.
         detectedTargetPos = detectedTargetPos.sub(shooterPosFromCam); //Map the detected vector onto the shooter's center
         detectedTargetPos = detectedTargetPos.rotate(turretRads); //This is used to rotate it back to the robot's perspective which is used to ground our measurements
-
-        //Averaging:
-        if(runningTargetPos == null){
-            //First time through
-            runningTargetPos = detectedTargetPos;
-        } else {
-            runningTargetPos = runningTargetPos.expAverage(detectedTargetPos, targetSmoothing);
-        }
-        return runningTargetPos;
+        return detectedTargetPos;
     }
 
     //Simpler version of getTargetDisplacement();
@@ -146,6 +155,12 @@ public class ShooterCalcs {
     //     Vector2d detectedTargetPos = new Vector2d(targetX, targetY);
     //     return detectedTargetPos.length();
     // }
+
+
+    public static double expSmoothing(double runningVal, double newVal, double alpha){
+        runningVal = (alpha*runningVal)+((1-alpha)*newVal);
+        return runningVal;
+    }
 
     public static int getLinear (double d, double table[][])
     {
@@ -179,15 +194,6 @@ public class ShooterCalcs {
             this.angle = angle;
             this.radius = radius;
             this.length = angle*radius;
-        }
-    }
-
-    static class Pose {
-        Vector2d displacement;
-        double angle;
-        public Pose(Vector2d displacement, double angle){
-            this.displacement = displacement;
-            this.angle = angle;
         }
     }
 
