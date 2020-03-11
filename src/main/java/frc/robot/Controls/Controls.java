@@ -44,13 +44,10 @@ public class Controls {
             case DRIVE_ASSIST:                  return false;
             case INTAKE:                        return thrustmaster.getRawButton(Thrustmaster.kBottomThumbButton);
             case REVERSE_BELTS:                 return thrustmaster.getRawButton(Thrustmaster.kLeftThumbButton);
-            case LOCK_LIFT:                     return buttonBoard.getRawButton(ButtonBoard.kButtonY);
-            case UNLOCK_LIFT:                   return buttonBoard.getRawButton(ButtonBoard.kButtonX);
-            case TOGGLE_PTO:                    return thrustmaster.getRawButton(Thrustmaster.kBottomButton6);
+            case TOGGLE_PTO:                    return thrustmaster.getRawButton(Thrustmaster.kBottomButton1);
             case CALIBRATE:                     return false;
             case RESET:                         return false;
             case QUICK_TURN:                    return false;
-            case MAX_HOOD:                      return buttonBoard.getRawButton(ButtonBoard.kButtonB);
             default:                            return false;
         }
     }

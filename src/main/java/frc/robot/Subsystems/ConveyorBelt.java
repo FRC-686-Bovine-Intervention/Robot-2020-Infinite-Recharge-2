@@ -80,35 +80,40 @@ public class ConveyorBelt extends Subsystem {
     @Override
     public void run(){
         if(!SmartDashboard.getBoolean("Conveyorbelt/Debug", false)){
-            if(shootEdge.update(controls.getBoolean(DriverControlsEnum.SHOOT))){
+            if(controls.getBoolean(DriverControlsEnum.REVERSE_BELTS)){
                 reverseTower();
                 reverseVBelt();
-                reverseStartTime = Timer.getFPGATimestamp();
-            }
+            } else {   
+                if(shootEdge.update(controls.getBoolean(DriverControlsEnum.SHOOT))){
+                    reverseTower();
+                    reverseVBelt();
+                    reverseStartTime = Timer.getFPGATimestamp();
+                }
 
-            if(controls.getBoolean(DriverControlsEnum.SHOOT)){
-                if(shooterChecked){
-                    turnOnTower();
-                    turnOnVBelt();
+                if(controls.getBoolean(DriverControlsEnum.SHOOT)){
+                    if(shooterChecked){
+                        turnOnTower();
+                        turnOnVBelt();
+                    } else {
+                        shooterChecked = ShooterMaster.getInstance().readyToShoot();
+                        if(Timer.getFPGATimestamp()-reverseStartTime >= reverseTime){
+                            stopTower();
+                            stopVBelt();
+                        }
+                    }
                 } else {
-                    shooterChecked = ShooterMaster.getInstance().readyToShoot();
-                    if(Timer.getFPGATimestamp()-reverseStartTime >= reverseTime){
+                    shooterChecked = false;
+                    if(exitSensor.get() && storageCount < 3){
+                        turnOnVBelt();
+                        if(!entranceSensor.get()){
+                            turnOnTower();
+                        } else {
+                            stopTower();
+                        }
+                    } else {
                         stopTower();
                         stopVBelt();
                     }
-                }
-            } else {
-                shooterChecked = false;
-                if(exitSensor.get() && storageCount < 3){
-                    turnOnVBelt();
-                    if(!entranceSensor.get()){
-                        turnOnTower();
-                    } else {
-                        stopTower();
-                    }
-                } else {
-                    stopTower();
-                    stopVBelt();
                 }
             }
         } else {

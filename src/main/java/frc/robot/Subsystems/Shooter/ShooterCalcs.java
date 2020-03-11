@@ -12,15 +12,8 @@ public class ShooterCalcs {
     //General Units: inches, radians
 
     //Distance (in), rpm, hoodPos (deg)
-    public static double[][] dataTable = {
-        {24,3600,0},
-        {49,2750,22},
-        {105,3000,35},
-        {189,4000,45},
-        {265,4750,47}
-    };
 
-    public static double[][] dataTableNewData = {
+    public static double[][] dataTable = {
         {0, 4500,0},
         {61, 2300,27},
         {134,3337,47},
@@ -31,7 +24,7 @@ public class ShooterCalcs {
     //Physical Variables =====================================
     private static final double targetHeight = 99;
     private static final double cameraHeight = 38;
-    private static final double cameraAngleElevation = Math.toRadians(22.5); //24
+    private static final double cameraAngleElevation = Math.toRadians(22.5);
     public static final Vector2d shooterPosFromRobot = new Vector2d(-12.0, 0);
     public static final Vector2d shooterPosFromCam = new Vector2d(0.0, 0);
     public static final double targetSmoothing = (1.0/2.0);
