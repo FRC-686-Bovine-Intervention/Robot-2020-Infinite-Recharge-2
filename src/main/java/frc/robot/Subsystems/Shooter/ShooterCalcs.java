@@ -20,13 +20,21 @@ public class ShooterCalcs {
         {265,4750,47}
     };
 
+    public static double[][] dataTableNewData = {
+        {0, 4500,0},
+        {61, 2300,27},
+        {134,3337,47},
+        {241,3500,47},
+        {365,3960,47}
+    };
+
     //Physical Variables =====================================
     private static final double targetHeight = 99;
-    private static final double cameraHeight = 41;
-    private static final double cameraAngleElevation = Math.toRadians(23);
+    private static final double cameraHeight = 38;
+    private static final double cameraAngleElevation = Math.toRadians(22.5); //24
     public static final Vector2d shooterPosFromRobot = new Vector2d(-12.0, 0);
     public static final Vector2d shooterPosFromCam = new Vector2d(0.0, 0);
-    public static final double targetSmoothing = (1.0/3.0);
+    public static final double targetSmoothing = (1.0/2.0);
 
     public static final double shooterWheelRadius = 3;
 

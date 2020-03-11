@@ -51,7 +51,7 @@ public class Kickers extends Subsystem{
 
     @Override
     public void run(){
-        if(!SmartDashboard.getBoolean("Kicker/Debug", false)){
+        if(!SmartDashboard.getBoolean("Kickers/Debug", false)){
             if(shootRise.update(controls.getBoolean(DriverControlsEnum.SHOOT))){
                 kickerMaster.set(ControlMode.PercentOutput, Constants.kKickerShootPercent);
             }

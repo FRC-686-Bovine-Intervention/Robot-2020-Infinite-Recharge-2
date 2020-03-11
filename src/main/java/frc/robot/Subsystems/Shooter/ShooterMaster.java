@@ -66,20 +66,21 @@ public class ShooterMaster extends AdvancedSubsystem {
 
     //Search variables
     private double sweepStartTime = 0;
-    private static final double sweepPeriod = 1.75;
-    private static final double sweepRange = Math.PI/2.0;
+    private static final double sweepPeriod = 2.0;
+    private static final double sweepRange = Math.toRadians(120);
     private boolean sweepFirstRun = true;
     private double targetLossStart = 0;
+    private RisingEdgeDetector searchEdge = new RisingEdgeDetector();
+    private boolean searchEdgeBool = false;
     private static final double targetLossMax = 1.5;
-    private RisingEdgeDetector targetLossEdge = new RisingEdgeDetector();
 
 
     //Shooting variables:
     private Vector2d runningTargetPos = null, lastTargetPos = null;
 
     private double runningVariation = 1;
-    private static final double variationTolerance = 24; //inches. Target "radius"
-    private static final double variationAlpha = (1.0/2.0);
+    private static final double variationTolerance = 48; //inches. Target "radius"
+    private static final double variationAlpha = (1.0/5.0);
     
 
 
@@ -123,7 +124,8 @@ public class ShooterMaster extends AdvancedSubsystem {
             sensedTargetPos = ShooterCalcs.getTargetDisplacement(runningTargetPos, limelight.getTargetVerticalAngleRad(),
                                 limelight.getTargetHorizontalAngleRad(), turret.getSensedPosition());
             double variationError = RobotState.getInstance().getLatestFieldToVehicle().getPosition().sub(sensedTargetPos).length();
-            runningVariation = ShooterCalcs.expSmoothing(runningVariation, variationError, variationAlpha);
+            //runningVariation = ShooterCalcs.expSmoothing(runningVariation, variationError, variationAlpha);
+            runningVariation = 0; // For testing
         } else {
             sensedTargetPos = ShooterCalcs.getNewTargetPos();
             runningVariation = 0;
@@ -185,6 +187,8 @@ public class ShooterMaster extends AdvancedSubsystem {
         }
         cDecision = bestOption;
 
+        searchEdgeBool = searchEdge.update(cDecision.id == iSearch);
+
 
 
         //====================================
@@ -213,18 +217,22 @@ public class ShooterMaster extends AdvancedSubsystem {
 
             case iSearch:
                 limelight.setLEDMode(LedMode.kOn);
-                if(targetLossEdge.update(!limelight.getIsTargetFound())){
+                if(searchEdgeBool){
                     targetLossStart = Timer.getFPGATimestamp();
                 }
 
-                if(!limelight.getIsTargetFound() && Timer.getFPGATimestamp()-targetLossStart > targetLossMax){
-                    if(sweepFirstRun){
-                        sweepStartTime = Timer.getFPGATimestamp();
-                        sweepFirstRun = false;
+                if(!limelight.getIsTargetFound()){
+                    if(Timer.getFPGATimestamp()-targetLossStart > targetLossMax){
+                        if(sweepFirstRun){
+                            sweepStartTime = Timer.getFPGATimestamp();
+                            sweepFirstRun = false;
+                        }
+                        double elapsedTime = Timer.getFPGATimestamp()-sweepStartTime;
+                        double position = Math.sin((elapsedTime/sweepPeriod)*Math.PI)*sweepRange;
+                        turret.setPosition(position);
+                    } else {
+                        turret.setPosition(runningTargetPos.angle());
                     }
-                    double elapsedTime = Timer.getFPGATimestamp()-sweepStartTime;
-                    double position = Math.sin((elapsedTime/sweepPeriod)*Math.PI)*sweepRange;
-                    turret.setPosition(position);
 
                     flywheel.setRPS(0.0);
                     hood.setPosition(0.0);
@@ -244,7 +252,7 @@ public class ShooterMaster extends AdvancedSubsystem {
 
                 //Respond physically
                 flywheel.setRPS(shooterVelocity.length());
-                turret.setPosition(shooterVelocity.angle());
+                turret.setPosition(((shooterVelocity.angle()-turret.getSensedPosition())*.99)+(turret.getSensedPosition()));
                 hood.setPosition(hoodPosition);
 
                 //Old Code:
@@ -289,8 +297,8 @@ public class ShooterMaster extends AdvancedSubsystem {
 
     @Override
     public void updateSmartDashboard() {
-        if(lastTargetPos != null){
-            SmartDashboard.putNumber("Shooter/TargetDist", lastTargetPos.length());
+        if(runningTargetPos != null){
+            SmartDashboard.putNumber("Shooter/TargetDist", runningTargetPos.length());
         }
         SmartDashboard.putNumber("Shooter/TurretSensedPos", Math.toDegrees(turret.getSensedPosition()));
         SmartDashboard.putNumber("Shooter/HoodSensedPos",  Math.toDegrees(hood.getSensedPosition()));
@@ -327,7 +335,7 @@ public class ShooterMaster extends AdvancedSubsystem {
 
 
     public boolean readyToShoot(){
-        return runningVariation <= variationTolerance && flywheel.nearTarget();
+        return (runningVariation <= variationTolerance) && flywheel.nearTarget();
     }
 
 }

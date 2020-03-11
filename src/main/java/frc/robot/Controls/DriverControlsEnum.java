@@ -5,7 +5,7 @@ public enum DriverControlsEnum {    // Controls Description
     SHOOT,                          // Shoot at outer high
     SEARCH,                         // Used by secondary driver to start searching sooner than shooting
     INTAKE,                         // Toggle between stored and ground
-    REVERSE_BELTS,                  // Reverse all belts for for jams
+    REVERSE_BELTS,                  // Reverse all belts for jams
     DRIVE_ASSIST,                   // Drives assists
     QUICK_TURN,                     // to make TriggerDrive joysticks happy
     LOCK_LIFT,                      // Activates the cylinder used to lock the lift

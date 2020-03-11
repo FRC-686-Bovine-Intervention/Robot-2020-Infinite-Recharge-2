@@ -155,8 +155,8 @@ public class Drivetrain extends Subsystem{
         if(Lift.getInstance().getPTOState() == PTOStates.DRIVE_ENABLED){
             leftPercent = (controls.getYAxis() +controls.getXAxis())/2.0;
             rightPercent = (controls.getYAxis()-controls.getXAxis())/2.0;
-            IPSLeft = leftPercent*144;
-            IPSRight = rightPercent*144;
+            IPSLeft = leftPercent*200;
+            IPSRight = rightPercent*200;
         } else if(Lift.getInstance().getPTOState() == PTOStates.LIFT_ENABLED){
             double avgExtension = -(getSensedInchesLeft()+getSensedInchesRight()/2.0);
             if((avgExtension < maxExtension || controls.getYAxis() < 0) && (avgExtension > 0 || controls.getYAxis() > 0)){

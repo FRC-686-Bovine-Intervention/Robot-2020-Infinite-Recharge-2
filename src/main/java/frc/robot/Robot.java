@@ -8,6 +8,7 @@ import frc.robot.ControlStructures.SubsystemController;
 import frc.robot.Subsystems.Camera;
 import frc.robot.Subsystems.ConveyorBelt;
 import frc.robot.Subsystems.Drivetrain;
+import frc.robot.Subsystems.Intake;
 import frc.robot.Subsystems.Kickers;
 import frc.robot.Subsystems.Lift;
 import frc.robot.Subsystems.Shooter.Flywheel;
@@ -38,6 +39,7 @@ public class Robot extends TimedRobot {
     subsystemController = new SubsystemController();
     subsystemController.addSubsystem(Drivetrain.getInstance());
     subsystemController.addSubsystem(ShooterMaster.getInstance());
+    subsystemController.addSubsystem(Intake.getInstance());
     subsystemController.addSubsystem(ConveyorBelt.getInstance());
     subsystemController.addSubsystem(Camera.getInstance());
     subsystemController.addSubsystem(Kickers.getInstance());
@@ -68,33 +70,33 @@ public class Robot extends TimedRobot {
     if(!subsystemController.calibrationComplete()){
       subsystemController.runCalibration();
     } else {
-      if(!autoStarted){
-        autoStartTime = Timer.getFPGATimestamp();
-        autoStarted = true;
-        Kickers.getInstance().setPercent(Constants.kKickerShootPercent);
-        Flywheel.getInstance().setRPS(275);
-        Hood.getInstance().setPosition(Math.toRadians(22));
-      }
+      // if(!autoStarted){
+      //   autoStartTime = Timer.getFPGATimestamp();
+      //   autoStarted = true;
+      //   Kickers.getInstance().setPercent(Constants.kKickerShootPercent);
+      //   Flywheel.getInstance().setRPS(275);
+      //   Hood.getInstance().setPosition(Math.toRadians(22));
+      // }
 
-      double shootingTime = Timer.getFPGATimestamp()-autoStartTime;
-      if(shootingTime > 6){
-        Kickers.getInstance().setPercent(0);
-        Flywheel.getInstance().setRPS(0);
-      }
+      // double shootingTime = Timer.getFPGATimestamp()-autoStartTime;
+      // if(shootingTime > 6){
+      //   Kickers.getInstance().setPercent(0);
+      //   Flywheel.getInstance().setRPS(0);
+      // }
   
-      if(shootingTime > 1 && shootingTime <6){
-        ConveyorBelt.getInstance().turnOnTower();
-        ConveyorBelt.getInstance().turnOnVBelt();
-      } else {
-        ConveyorBelt.getInstance().stopTower();
-        ConveyorBelt.getInstance().stopVBelt();
-      }
+      // if(shootingTime > 1 && shootingTime <6){
+      //   ConveyorBelt.getInstance().turnOnTower();
+      //   ConveyorBelt.getInstance().turnOnVBelt();
+      // } else {
+      //   ConveyorBelt.getInstance().stopTower();
+      //   ConveyorBelt.getInstance().stopVBelt();
+      // }
   
-      if(shootingTime > 6 && shootingTime <9){
-        Drivetrain.getInstance().setPower(-0.25, -0.25);
-      } else {
-        Drivetrain.getInstance().setPower(0.0, 0.0);
-      }
+      // if(shootingTime > 6 && shootingTime <9){
+      //   Drivetrain.getInstance().setPower(-0.25, -0.25);
+      // } else {
+      //   Drivetrain.getInstance().setPower(0.0, 0.0);
+      // }
     }
   }
 

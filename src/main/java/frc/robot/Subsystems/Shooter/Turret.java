@@ -28,10 +28,10 @@ public class Turret {
     private static final double encoderUnitsPerRev = 49050;
 
     private static final int tolerance = 20;
-    private static final int cruiseVelocity = Utility.rpsToUPF(1, encoderUnitsPerRev);
-    private static final int maxAcceleration = Utility.rpspsToUPFPF(1, encoderUnitsPerRev);
+    private static final int cruiseVelocity = Utility.rpsToUPF(Math.PI*1, encoderUnitsPerRev);
+    private static final int maxAcceleration = Utility.rpspsToUPFPF(Math.PI*48, encoderUnitsPerRev);
 
-    private static final double limits[] = {-(Math.PI), (Math.PI)};
+    private static final double limits[] = {-(Math.PI*.9), (Math.PI*.9)};
 
 
 
@@ -70,7 +70,7 @@ public class Turret {
 
     public void setPosition(double radians){
         radians = Utility.bound(radians, limits);
-        turretMotor.set(ControlMode.Position, Utility.radiansToEncoderUnits(radians, encoderUnitsPerRev));
+        turretMotor.set(ControlMode.MotionMagic, Utility.radiansToEncoderUnits(radians, encoderUnitsPerRev));
     }
 
     public void setPercent(double percent){

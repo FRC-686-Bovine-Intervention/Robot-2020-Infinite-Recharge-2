@@ -30,7 +30,7 @@ public class Hood {
     private static final int cruiseVelocity = Utility.rpsToUPF(1, encoderUnitsPerRev);
     private static final int maxAcceleration = Utility.rpsToUPF(0, 100);
 
-    private static final double[] limits = {0, Math.PI/4.0};
+    private static final double[] limits = {0, Math.toRadians(50)};
 
 
 
