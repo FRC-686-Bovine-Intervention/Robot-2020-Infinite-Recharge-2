@@ -138,8 +138,11 @@ public class ShooterCalcs {
         return shooterVelocity;
     }
 
-    public static Vector2d getTargetDisplacement(Vector2d runningTargetPos, double verticalRads, double horizontalRads, double turretRads){
+    public static Vector2d getTargetDisplacement(){
         //Target Displacement angle is on the interval [-pi,pi]
+        double turretRads = Turret.getInstance().getSensedPosition();
+        double verticalRads = Limelight.getInstance().getTargetVerticalAngleRad();
+        double horizontalRads = Limelight.getInstance().getTargetHorizontalAngleRad();
         double targetY = (targetHeight-cameraHeight)/Math.tan(verticalRads+cameraAngleElevation);
         double targetX = targetY*Math.tan(horizontalRads); //Negative is to ensure that left of camera is positive from top-view
         Vector2d detectedTargetPos = new Vector2d(targetX, targetY);

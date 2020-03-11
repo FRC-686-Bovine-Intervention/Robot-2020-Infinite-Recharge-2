@@ -34,8 +34,8 @@ public class Camera extends Subsystem{
     public void run(){
         switch(lift.getPTOState())
         {
-            case LIFT_ENABLED:              servo.setAngle(90);
-            default:case DRIVE_ENABLED:     servo.setAngle(0);
+            case LIFT_ENABLED:              servo.setAngle(90); break;
+            default:                        servo.setAngle(0);
         }
     }
 

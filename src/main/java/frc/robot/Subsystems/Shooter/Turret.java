@@ -100,7 +100,6 @@ public class Turret {
             setPercent(0.0);
             zeroWithInit(-3);
             calibrationComplete = true;
-            setPosition(0);
         }
 
     }
