@@ -136,7 +136,6 @@ public class ShooterMaster extends AdvancedSubsystem {
         } else {
             runningTargetPos = runningTargetPos.expAverage(sensedTargetPos, ShooterCalcs.targetSmoothing);
         }
-        System.out.println(runningTargetPos.angle());
 
         if(limelight.getIsTargetFound()){
             //Updating robot pos based on limelight sensing
@@ -247,12 +246,16 @@ public class ShooterMaster extends AdvancedSubsystem {
                 limelight.setLEDMode(LedMode.kOn);
                 
                 //Calculating information necessary for making shot along with applying lead
+                if(limelight.getIsTargetFound()){
+                    //Hi
+                    System.out.println("break");
+                }
                 Vector2d shooterVelocity = ShooterCalcs.calcShooterLeadVelocity(runningTargetPos, Drivetrain.getInstance().getLinearAngularSpeed());
                 double hoodPosition = ShooterCalcs.calcHoodPosition(runningTargetPos.length());
 
                 //Respond physically
                 flywheel.setRPS(shooterVelocity.length());
-                turret.setPosition(((shooterVelocity.angle()-turret.getSensedPosition())*.5)+(turret.getSensedPosition()));
+                turret.setPosition(((shooterVelocity.angle()-turret.getSensedPosition())*.99)+(turret.getSensedPosition()));
                 hood.setPosition(hoodPosition);
 
                 //Old Code:
