@@ -1,11 +1,11 @@
 package frc.robot.controllers;
 
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.util.DataLogger;
-import frc.robot.util.InterpolatingDouble;
-import frc.robot.util.InterpolatingTreeMap;
-import frc.robot.util.Kinematics;
-import frc.robot.util.Pose;
+import frc.robot.lib.util.DataLogger;
+import frc.robot.lib.util.InterpolatingDouble;
+import frc.robot.lib.util.InterpolatingTreeMap;
+import frc.robot.lib.util.Kinematics;
+import frc.robot.lib.util.Pose;
 
 /**
  * RobotState keeps track of the poses of various coordinate frames throughout

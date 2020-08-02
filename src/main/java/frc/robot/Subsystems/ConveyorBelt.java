@@ -9,10 +9,10 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.controllers.Subsystem;
-import frc.robot.joysticks.Controls;
-import frc.robot.joysticks.DriverControlsEnum;
+import frc.robot.lib.joysticks.Controls;
+import frc.robot.lib.joysticks.DriverControlsEnum;
 import frc.robot.subsystems.shooter.ShooterMaster;
-import frc.robot.util.RisingEdgeDetector;
+import frc.robot.lib.util.RisingEdgeDetector;
 
 public class ConveyorBelt extends Subsystem {
     private static ConveyorBelt instance = null;

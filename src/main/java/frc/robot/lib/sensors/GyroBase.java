@@ -1,4 +1,4 @@
-package frc.robot.sensors;
+package frc.robot.lib.sensors;
 
 /**
  * An abstract class for a simple gyro interface.

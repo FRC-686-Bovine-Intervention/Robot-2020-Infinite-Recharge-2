@@ -1,4 +1,4 @@
-package frc.robot.util;
+package frc.robot.lib.util;
 
 
 public class Vector2d implements Interpolable<Vector2d>

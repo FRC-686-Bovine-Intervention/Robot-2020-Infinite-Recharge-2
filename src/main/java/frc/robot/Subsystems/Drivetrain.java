@@ -8,7 +8,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.controllers.Subsystem;
-import frc.robot.joysticks.Controls;
+import frc.robot.lib.joysticks.Controls;
 import frc.robot.subsystems.Lift.PTOStates;
 import frc.robot.subsystems.shooter.Utility;
 

@@ -1,4 +1,4 @@
-package frc.robot.sensors;
+package frc.robot.lib.sensors;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 

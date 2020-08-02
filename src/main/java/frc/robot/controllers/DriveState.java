@@ -1,6 +1,6 @@
 package frc.robot.controllers;
 
-import frc.robot.util.DataLogger;
+import frc.robot.lib.util.DataLogger;
 
 import com.ctre.phoenix.motorcontrol.*;
 

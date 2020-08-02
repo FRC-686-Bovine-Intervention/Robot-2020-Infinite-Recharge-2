@@ -4,9 +4,9 @@ import frc.robot.Constants;
 import frc.robot.FieldDimensions;
 import frc.robot.controllers.RobotState;
 import frc.robot.subsystems.Drivetrain.LinearAngularSpeed;
-import frc.robot.sensors.Pigeon;
-import frc.robot.util.Pose;
-import frc.robot.util.Vector2d;
+import frc.robot.lib.sensors.Pigeon;
+import frc.robot.lib.util.Pose;
+import frc.robot.lib.util.Vector2d;
 
 public class ShooterCalcs {
     //General Units: inches, radians

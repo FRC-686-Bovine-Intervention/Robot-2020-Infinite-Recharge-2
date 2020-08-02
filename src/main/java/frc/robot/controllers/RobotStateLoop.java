@@ -4,7 +4,7 @@ package frc.robot.controllers;
 
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.sensors.Pigeon;
+import frc.robot.lib.sensors.Pigeon;
 
 /**
  * Periodically estimates the state of the robot using the robot's distance

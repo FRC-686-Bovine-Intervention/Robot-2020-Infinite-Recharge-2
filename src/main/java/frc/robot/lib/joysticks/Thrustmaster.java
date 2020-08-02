@@ -1,4 +1,4 @@
-package frc.robot.joysticks;
+package frc.robot.lib.joysticks;
 
 public class Thrustmaster {
     private Thrustmaster(){}

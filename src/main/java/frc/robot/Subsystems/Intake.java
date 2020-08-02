@@ -8,8 +8,8 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
 import frc.robot.controllers.Subsystem;
-import frc.robot.joysticks.Controls;
-import frc.robot.joysticks.DriverControlsEnum;
+import frc.robot.lib.joysticks.Controls;
+import frc.robot.lib.joysticks.DriverControlsEnum;
 
 public class Intake extends Subsystem{
     private static Intake instance = null;

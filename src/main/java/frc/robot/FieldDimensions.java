@@ -3,9 +3,9 @@ package frc.robot;
 import java.util.Vector;
 
 import frc.robot.Constants;
-import frc.robot.util.DataLogger;
-import frc.robot.util.Pose;
-import frc.robot.util.Vector2d;
+import frc.robot.lib.util.DataLogger;
+import frc.robot.lib.util.Pose;
+import frc.robot.lib.util.Vector2d;
 
 /**
  * Interface that holds all the field measurements 

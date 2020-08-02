@@ -6,10 +6,10 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.controllers.Subsystem;
-import frc.robot.joysticks.Controls;
-import frc.robot.joysticks.DriverControlsEnum;
-import frc.robot.util.FallingEdgeDetector;
-import frc.robot.util.RisingEdgeDetector;
+import frc.robot.lib.joysticks.Controls;
+import frc.robot.lib.joysticks.DriverControlsEnum;
+import frc.robot.lib.util.FallingEdgeDetector;
+import frc.robot.lib.util.RisingEdgeDetector;
 
 public class Kickers extends Subsystem{
     private static Kickers instance = null;

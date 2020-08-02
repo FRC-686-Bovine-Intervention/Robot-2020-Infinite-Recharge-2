@@ -7,9 +7,9 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.controllers.AdvancedSubsystem;
-import frc.robot.joysticks.Controls;
-import frc.robot.joysticks.DriverControlsEnum;
-import frc.robot.util.RisingEdgeDetector;
+import frc.robot.lib.joysticks.Controls;
+import frc.robot.lib.joysticks.DriverControlsEnum;
+import frc.robot.lib.util.RisingEdgeDetector;
 
 public class Lift extends AdvancedSubsystem{
     private static Lift instance = null;

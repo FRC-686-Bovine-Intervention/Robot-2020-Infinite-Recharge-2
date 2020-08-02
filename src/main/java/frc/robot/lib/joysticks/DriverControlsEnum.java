@@ -1,4 +1,4 @@
-package frc.robot.joysticks;
+package frc.robot.lib.joysticks;
 // A list of all driver controls to be mapped to joystick buttons
 
 public enum DriverControlsEnum {    // Controls Description

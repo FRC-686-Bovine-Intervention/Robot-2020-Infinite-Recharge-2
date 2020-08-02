@@ -1,4 +1,4 @@
-package frc.robot.util;
+package frc.robot.lib.util;
 
 /**
  * Interpolable is an interface used by an Interpolating Tree as the Value type.
