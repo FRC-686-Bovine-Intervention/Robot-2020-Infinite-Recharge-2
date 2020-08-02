@@ -1,9 +1,9 @@
-package frc.robot.Subsystems.Shooter;
+package frc.robot.subsystems.shooter;
 
 import frc.robot.Constants;
 import frc.robot.FieldDimensions;
-import frc.robot.ControlStructures.RobotState;
-import frc.robot.Subsystems.Drivetrain.LinearAngularSpeed;
+import frc.robot.controllers.RobotState;
+import frc.robot.subsystems.Drivetrain.LinearAngularSpeed;
 import frc.robot.sensors.Pigeon;
 import frc.robot.util.Pose;
 import frc.robot.util.Vector2d;

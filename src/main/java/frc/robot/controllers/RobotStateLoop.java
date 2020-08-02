@@ -1,9 +1,9 @@
-package frc.robot.ControlStructures;
+package frc.robot.controllers;
 
 
 
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.Subsystems.Drivetrain;
+import frc.robot.subsystems.Drivetrain;
 import frc.robot.sensors.Pigeon;
 
 /**
@@ -59,14 +59,8 @@ public class RobotStateLoop extends Subsystem
     }
 
     @Override
-    public void zeroSensors() {
-        // TODO Auto-generated method stub
-
-    }
+    public void zeroSensors() {}
 
     @Override
-    public void updateSmartDashboard() {
-        // TODO Auto-generated method stub
-
-    }
+    public void updateSmartDashboard() {}
 }

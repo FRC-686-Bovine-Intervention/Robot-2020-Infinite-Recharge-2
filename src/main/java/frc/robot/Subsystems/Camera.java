@@ -1,11 +1,11 @@
-package frc.robot.Subsystems;
+package frc.robot.subsystems;
 
 import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Servo;
-import frc.robot.ControlStructures.Subsystem;
+import frc.robot.controllers.Subsystem;
 
 public class Camera extends Subsystem{
     private static Camera instance = null;

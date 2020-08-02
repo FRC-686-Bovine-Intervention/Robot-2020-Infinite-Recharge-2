@@ -1,13 +1,13 @@
-package frc.robot.Subsystems;
+package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.ControlStructures.Subsystem;
-import frc.robot.Controls.Controls;
-import frc.robot.Controls.DriverControlsEnum;
+import frc.robot.controllers.Subsystem;
+import frc.robot.joysticks.Controls;
+import frc.robot.joysticks.DriverControlsEnum;
 import frc.robot.util.FallingEdgeDetector;
 import frc.robot.util.RisingEdgeDetector;
 

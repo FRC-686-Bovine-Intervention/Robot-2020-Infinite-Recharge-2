@@ -1,4 +1,4 @@
-package frc.robot.Subsystems.Shooter;
+package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;

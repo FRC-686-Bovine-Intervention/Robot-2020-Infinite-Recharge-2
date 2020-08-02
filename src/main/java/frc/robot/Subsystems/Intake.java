@@ -1,4 +1,4 @@
-package frc.robot.Subsystems;
+package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -7,10 +7,9 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
-import frc.robot.ControlStructures.Subsystem;
-import frc.robot.Controls.Controls;
-import frc.robot.Controls.DriverControlsEnum;
-import frc.robot.util.RisingEdgeDetector;
+import frc.robot.controllers.Subsystem;
+import frc.robot.joysticks.Controls;
+import frc.robot.joysticks.DriverControlsEnum;
 
 public class Intake extends Subsystem{
     private static Intake instance = null;

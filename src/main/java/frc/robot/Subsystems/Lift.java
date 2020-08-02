@@ -1,15 +1,14 @@
-package frc.robot.Subsystems;
+package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.ControlStructures.AdvancedSubsystem;
-import frc.robot.Controls.Controls;
-import frc.robot.Controls.DriverControlsEnum;
+import frc.robot.controllers.AdvancedSubsystem;
+import frc.robot.joysticks.Controls;
+import frc.robot.joysticks.DriverControlsEnum;
 import frc.robot.util.RisingEdgeDetector;
 
 public class Lift extends AdvancedSubsystem{

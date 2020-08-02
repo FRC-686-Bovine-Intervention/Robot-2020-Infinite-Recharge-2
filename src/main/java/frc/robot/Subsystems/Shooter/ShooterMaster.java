@@ -1,15 +1,15 @@
-package frc.robot.Subsystems.Shooter;
+package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.ControlStructures.AdvancedSubsystem;
-import frc.robot.ControlStructures.RobotState;
-import frc.robot.Controls.Controls;
-import frc.robot.Controls.DriverControlsEnum;
-import frc.robot.Subsystems.Drivetrain;
-import frc.robot.Subsystems.Lift;
-import frc.robot.Subsystems.Lift.PTOStates;
-import frc.robot.Subsystems.Shooter.Limelight.LedMode;
+import frc.robot.controllers.AdvancedSubsystem;
+import frc.robot.controllers.RobotState;
+import frc.robot.joysticks.Controls;
+import frc.robot.joysticks.DriverControlsEnum;
+import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Lift;
+import frc.robot.subsystems.Lift.PTOStates;
+import frc.robot.subsystems.shooter.Limelight.LedMode;
 import frc.robot.sensors.Pigeon;
 import frc.robot.util.Pose;
 import frc.robot.util.RisingEdgeDetector;

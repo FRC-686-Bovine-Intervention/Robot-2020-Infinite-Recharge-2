@@ -1,4 +1,4 @@
-package frc.robot.Subsystems;
+package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -7,10 +7,10 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.ControlStructures.Subsystem;
-import frc.robot.Controls.Controls;
-import frc.robot.Subsystems.Lift.PTOStates;
-import frc.robot.Subsystems.Shooter.Utility;
+import frc.robot.controllers.Subsystem;
+import frc.robot.joysticks.Controls;
+import frc.robot.subsystems.Lift.PTOStates;
+import frc.robot.subsystems.shooter.Utility;
 
 public class Drivetrain extends Subsystem{
 

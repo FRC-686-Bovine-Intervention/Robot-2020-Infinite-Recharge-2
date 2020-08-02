@@ -3,7 +3,7 @@ package frc.robot.sensors;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
 import frc.robot.Constants;
-import frc.robot.Subsystems.ConveyorBelt;
+import frc.robot.subsystems.ConveyorBelt;
 
 public class Pigeon extends GyroBase 
 {

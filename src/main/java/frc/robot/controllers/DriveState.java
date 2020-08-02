@@ -1,4 +1,4 @@
-package frc.robot.ControlStructures;
+package frc.robot.controllers;
 
 import frc.robot.util.DataLogger;
 
