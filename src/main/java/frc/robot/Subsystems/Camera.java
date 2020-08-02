@@ -5,9 +5,9 @@ import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Servo;
-import frc.robot.controllers.Subsystem;
+import frc.robot.controllers.Loop;
 
-public class Camera extends Subsystem{
+public class Camera implements Loop {
     private static Camera instance = null;
     public static Camera getInstance(){
         if(instance == null){
@@ -28,10 +28,10 @@ public class Camera extends Subsystem{
     }
 
     @Override
-    public void init(){}
+    public void onStart() {}
 
     @Override
-    public void run(){
+    public void onLoop() {
         switch(lift.getPTOState())
         {
             case LIFT_ENABLED:              servo.setAngle(90); break;
@@ -40,12 +40,5 @@ public class Camera extends Subsystem{
     }
 
     @Override
-    public void zeroSensors() {
-
-    }
-
-    @Override
-    public void updateSmartDashboard() {
-
-    }
+    public void onStop() {}
 }

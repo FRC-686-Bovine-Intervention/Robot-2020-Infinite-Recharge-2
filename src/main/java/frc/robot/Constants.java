@@ -10,16 +10,6 @@ package frc.robot;
  * constants as well as constants determined through calibrations.
  */
 public class Constants {
-    // singleton class
-    private static Constants instance = null;
-
-    public static Constants getInstance() {
-        if (instance == null) {
-            instance = new Constants();
-        }
-        return instance;
-    }
-
     public static double kLoopDt = 0.01;
     public static double kDriveWatchdogTimerThreshold = 0.500;
     public static int kTalonTimeoutMs = 5; // ms
@@ -47,7 +37,6 @@ public class Constants {
     public static int kEntranceProximityID =        1;
     public static int kExitProximityID =            2;
 
-
     public static int kShooterTalonId =             31;
     public static int kShooterSlaveId =             32;
     public static int kShooterTurretID =            33;
@@ -56,15 +45,12 @@ public class Constants {
 
     public static int kPanelMasterId =              41;
 
-
-    public static int kMainSolenoidFChannel =       7; //
-    public static int kMainSolenoidRChannel =       5; //
-    public static int kSecondarySolenoidFChannel =  6; //
-    public static int kSecondarySolenoidRChannel =  4; //
-    public static int kPTOSolenoidChannel =        3; //
-    public static int kLiftLockSolenoidChannel =   2; //
-
-
+    public static int kMainSolenoidFChannel =       7;
+    public static int kMainSolenoidRChannel =       5;
+    public static int kSecondarySolenoidFChannel =  6;
+    public static int kSecondarySolenoidRChannel =  4;
+    public static int kPTOSolenoidChannel =        3; 
+    public static int kLiftLockSolenoidChannel =   2; 
 
 
     public static double kIntakePower = 1.0;
@@ -82,13 +68,9 @@ public class Constants {
     public static double kHopperReversePercent = 0.25; //For both motors
 
 
-
     public static double kWheelDiameter = 6.0; //inches
     public static double kDrivetrainWidth = 30.0; //inches
-
-
-
-
+    
 
     //Encoder stuff
     public static final int kSlotIdxSpeed = 0;

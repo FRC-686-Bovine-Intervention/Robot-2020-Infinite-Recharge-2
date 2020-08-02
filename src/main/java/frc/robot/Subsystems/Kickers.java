@@ -5,13 +5,13 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.controllers.Subsystem;
+import frc.robot.controllers.Loop;
 import frc.robot.lib.joysticks.Controls;
 import frc.robot.lib.joysticks.DriverControlsEnum;
 import frc.robot.lib.util.FallingEdgeDetector;
 import frc.robot.lib.util.RisingEdgeDetector;
 
-public class Kickers extends Subsystem{
+public class Kickers implements Loop {
     private static Kickers instance = null;
     public static Kickers getInstance(){
         if(instance == null){
@@ -47,10 +47,10 @@ public class Kickers extends Subsystem{
     }
 
     @Override
-    public void init(){}
+    public void onStart(){}
 
     @Override
-    public void run(){
+    public void onLoop(){
         if(!SmartDashboard.getBoolean("Kickers/Debug", false)){
             if(shootRise.update(controls.getBoolean(DriverControlsEnum.SHOOT))){
                 kickerMaster.set(ControlMode.PercentOutput, Constants.kKickerShootPercent);
@@ -64,15 +64,7 @@ public class Kickers extends Subsystem{
     }
 
     @Override
-    public void zeroSensors() {
-
-    }
-
-    @Override
-    public void updateSmartDashboard() {
-
-    }
-
+    public void onStop(){}
 
     public void setPercent(double percent){
         kickerMaster.set(ControlMode.PercentOutput,percent);

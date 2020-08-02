@@ -8,23 +8,23 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.controllers.Subsystem;
+import frc.robot.controllers.Loop;
 import frc.robot.lib.joysticks.Controls;
 import frc.robot.lib.joysticks.DriverControlsEnum;
 import frc.robot.subsystems.shooter.ShooterMaster;
 import frc.robot.lib.util.RisingEdgeDetector;
 
-public class ConveyorBelt extends Subsystem {
+public class ConveyorBelt implements Loop {
     private static ConveyorBelt instance = null;
-        public static ConveyorBelt getInstance(){
-        if(instance == null){
+
+    public static ConveyorBelt getInstance() {
+        if (instance == null) {
             instance = new ConveyorBelt();
         }
         return instance;
     }
 
     private Controls controls;
-
 
     private VictorSPX towerMaster, towerSlave, vBeltRight;
     public TalonSRX vBeltLeft;
@@ -40,8 +40,7 @@ public class ConveyorBelt extends Subsystem {
 
     private int storageCount = 0;
 
-
-    public ConveyorBelt(){
+    public ConveyorBelt() {
         controls = Controls.getInstance();
 
         entranceSensor = new DigitalInput(Constants.kEntranceProximityID);
@@ -72,39 +71,37 @@ public class ConveyorBelt extends Subsystem {
 
 
     @Override
-    public void init() {
-
-    }
+    public void onStart() {}
 
     @Override
-    public void run(){
-        if(!SmartDashboard.getBoolean("Conveyorbelt/Debug", false)){
-            if(controls.getBoolean(DriverControlsEnum.REVERSE_BELTS)){
+    public void onLoop() {
+        if (!SmartDashboard.getBoolean("Conveyorbelt/Debug", false)) {
+            if (controls.getBoolean(DriverControlsEnum.REVERSE_BELTS)) {
                 reverseTower();
                 reverseVBelt();
-            } else {   
-                if(shootEdge.update(controls.getBoolean(DriverControlsEnum.SHOOT))){
+            } else {
+                if (shootEdge.update(controls.getBoolean(DriverControlsEnum.SHOOT))) {
                     reverseTower();
                     reverseVBelt();
                     reverseStartTime = Timer.getFPGATimestamp();
                 }
 
-                if(controls.getBoolean(DriverControlsEnum.SHOOT)){
-                    if(shooterChecked){
+                if (controls.getBoolean(DriverControlsEnum.SHOOT)) {
+                    if (shooterChecked) {
                         turnOnTower();
                         turnOnVBelt();
                     } else {
                         shooterChecked = ShooterMaster.getInstance().readyToShoot();
-                        if(Timer.getFPGATimestamp()-reverseStartTime >= reverseTime){
+                        if (Timer.getFPGATimestamp() - reverseStartTime >= reverseTime) {
                             stopTower();
                             stopVBelt();
                         }
                     }
                 } else {
                     shooterChecked = false;
-                    if(exitSensor.get() && storageCount < 3){
+                    if (exitSensor.get() && storageCount < 3) {
                         turnOnVBelt();
-                        if(!entranceSensor.get()){
+                        if (!entranceSensor.get()) {
                             turnOnTower();
                         } else {
                             stopTower();
@@ -116,70 +113,54 @@ public class ConveyorBelt extends Subsystem {
                 }
             }
         } else {
-            towerMaster.set(ControlMode.PercentOutput, SmartDashboard.getNumber("Conveyorbelt/Debug/SetTowerPercent", 0));
+            towerMaster.set(ControlMode.PercentOutput,
+                    SmartDashboard.getNumber("Conveyorbelt/Debug/SetTowerPercent", 0));
             vBeltLeft.set(ControlMode.PercentOutput, SmartDashboard.getNumber("Conveyorbelt/Debug/SetLeftVPercent", 0));
-            vBeltRight.set(ControlMode.PercentOutput, SmartDashboard.getNumber("Conveyorbelt/Debug/SetRightVPercent", 0));
+            vBeltRight.set(ControlMode.PercentOutput,
+                    SmartDashboard.getNumber("Conveyorbelt/Debug/SetRightVPercent", 0));
         }
     }
 
     @Override
-    public void zeroSensors() {
+    public void onStop(){}
 
-    }
-
-    @Override
-    public void updateSmartDashboard() {
-
-    }
-
-
-
-
-    public void feed(){
+    public void feed() {
         turnOnTower();
         setVBeltPercent(Constants.kLeftHopperPercent, Constants.kRightHopperPercent);
     }
 
-
-    public void reverseTower(){
+    public void reverseTower() {
         setTowerPercent(-Constants.kConveyorBackUpPercent);
     }
 
-    public void turnOnTower(){
+    public void turnOnTower() {
         setTowerPercent(Constants.kConveyorFeedPercent);
     }
 
-    public void stopTower(){
+    public void stopTower() {
         setTowerPercent(0.0);
     }
 
-
-    public void setTowerPercent(double percent){
+    public void setTowerPercent(double percent) {
         towerMaster.set(ControlMode.PercentOutput, percent);
     }
 
-
-
-
-    public void reverseVBelt(){
+    public void reverseVBelt() {
         setVBeltPercent(-Constants.kLeftHopperPercent, -Constants.kRightHopperPercent);
     }
 
-
-    public void turnOnVBelt(){
+    public void turnOnVBelt() {
         setVBeltPercent(Constants.kLeftHopperPercent, Constants.kRightHopperPercent);
     }
 
-    public void stopVBelt(){
+    public void stopVBelt() {
         setVBeltPercent(0.0, 0.0);
     }
 
-    public void setVBeltPercent(double leftPercent, double rightPercent){
+    public void setVBeltPercent(double leftPercent, double rightPercent) {
         vBeltLeft.set(ControlMode.PercentOutput, leftPercent);
         vBeltRight.set(ControlMode.PercentOutput, rightPercent);
     }
-
-    
 }
 
 

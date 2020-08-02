@@ -1,14 +1,11 @@
 package frc.robot;
 
-import java.util.Vector;
-
-import frc.robot.Constants;
 import frc.robot.lib.util.DataLogger;
 import frc.robot.lib.util.Pose;
 import frc.robot.lib.util.Vector2d;
 
 /**
- * Interface that holds all the field measurements 
+ * Class that holds all the field measurements 
  */
 
 public class FieldDimensions 
@@ -21,11 +18,11 @@ public class FieldDimensions
     }
 
     //Red is to the right (postive x)
+    //Long edge of the field is along the x-axis
 
 	// dimensions of field components
 	public static double kFieldLengthX = 648;       // 54'
 	public static double kFieldLengthY = 324;       // 27'
-    
 
     //Start Positions
     //Port is also one of these but is located elsewhere
@@ -43,7 +40,6 @@ public class FieldDimensions
     public static double centerRedSidePostBally = 220.930;
     public static double centerRedSideFarBallx = 278.473;
     public static double centerRedSideFarBally = 227.267;
-    
 
     //Field-based positions
     public static double startLineDist = 149.188;
@@ -61,18 +57,13 @@ public class FieldDimensions
     public static double midShootPosx = centerRedSideFarBallx;
     public static double midShootPosy = centerRedSideFarBally+40.0;
 
-
-
     public static double distPortToPort = 0;
     public static double anglePortToPort = 180.0;
     public static double distMiddleToPort = 0;
     public static double angleMiddleToPort = 0;
 
-
     public static double distOppTrenchToPort = 319.827; //inches
     public static double angleOppTrenchToPort = 51.105 + 90; //degrees
-
-
 
     public static Vector2d portStartPos = new Vector2d(startLineDist, portY);
     public static Vector2d opponentTrenchBallPos = new Vector2d(opponentTrenchBallx, opponentTrenchBally);
@@ -90,22 +81,15 @@ public class FieldDimensions
     public static Vector2d centerRedSidePostBallPos = new Vector2d(centerRedSidePostBallx, centerRedSidePostBally);
     public static Vector2d centerRedSideFarBallPos = new Vector2d(centerRedSideFarBallx, centerRedSideFarBally);
 
-
     public static Pose portStartPose = new Pose(startLineDist, portY, 0.0);
     public static Pose middleStartPose = new Pose(startLineDist, middleStartPosy, 0.0);
     public static Pose playerStationStartPose = new Pose(startLineDist, playerStationy, 0.0);
     public static Pose portSumoPose = new Pose(startLineDist, playerStationy, 30.0);
     public static Pose middleSumoPose = new Pose(startLineDist, playerStationy, 30.0);
 
-
-
-
-	private static final DataLogger logger = new DataLogger()
-    {
+	private static final DataLogger logger = new DataLogger() {
         @Override
-        public void log()
-        {
-        }
+        public void log(){}
     };
     
     public static DataLogger getLogger() { return logger; }    

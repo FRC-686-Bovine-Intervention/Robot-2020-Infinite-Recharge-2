@@ -5,13 +5,9 @@ import frc.robot.Constants;
 public class Utility {
     private Utility(){}
 
-
-
-
     public static double bound(double value, double[] range){
         return value<range[0] ? range[0] : value >range[1] ? range[1] : value;
     }
-
 
     //Unit Conversion:
     public static int radiansToEncoderUnits(double radians, double encoderUnitsPerRev){
@@ -27,7 +23,6 @@ public class Utility {
     public static int rpsToUPF(double rps, double encoderUnitsPerRev){
         return (int)(rps*(encoderUnitsPerRev/(Math.PI*2.0))*(Constants.kTalonLoopPeriodSec));
     }
-
 
     /**
      * Hello2!

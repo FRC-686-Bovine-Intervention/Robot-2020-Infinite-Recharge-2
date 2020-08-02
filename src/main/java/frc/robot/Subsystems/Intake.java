@@ -7,11 +7,11 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
-import frc.robot.controllers.Subsystem;
+import frc.robot.controllers.Loop;
 import frc.robot.lib.joysticks.Controls;
 import frc.robot.lib.joysticks.DriverControlsEnum;
 
-public class Intake extends Subsystem{
+public class Intake implements Loop{
     private static Intake instance = null;
     public static Intake getInstance(){
         if(instance == null){
@@ -41,12 +41,11 @@ public class Intake extends Subsystem{
         
     }
 
+    @Override
+    public void onStart(){}
 
     @Override
-    public void init(){}
-
-    @Override
-    public void run(){
+    public void onLoop(){
         double reverseElapsedTime = Timer.getFPGATimestamp()-reverseStartTime;
 
         if(controls.getBoolean(DriverControlsEnum.INTAKE)){
@@ -68,18 +67,7 @@ public class Intake extends Subsystem{
     }
 
     @Override
-    public void zeroSensors() {
-
-    }
-
-    @Override
-    public void updateSmartDashboard() {
-
-    }
-
-
-
-
+    public void onStop(){}
 
     public void setIntakePower(double power){
         intakeMotor.set(ControlMode.PercentOutput, power);
@@ -99,5 +87,4 @@ public class Intake extends Subsystem{
     public double getCurrent(){
         return intakeMotor.getStatorCurrent();
     }
-
 }

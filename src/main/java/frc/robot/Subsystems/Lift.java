@@ -6,12 +6,12 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.controllers.AdvancedSubsystem;
+import frc.robot.controllers.Loop;
 import frc.robot.lib.joysticks.Controls;
 import frc.robot.lib.joysticks.DriverControlsEnum;
 import frc.robot.lib.util.RisingEdgeDetector;
 
-public class Lift extends AdvancedSubsystem{
+public class Lift implements Loop {
     private static Lift instance = null;
     public static Lift getInstance(){
 
@@ -59,12 +59,12 @@ public class Lift extends AdvancedSubsystem{
 
 
     @Override
-    public void init(){
+    public void onStart(){
         shiftToDrive();
     }
 
     @Override
-    public void run(){
+    public void onLoop(){
         if(!SmartDashboard.getBoolean("Lift/Debug", false)){
             if(ptoEdge.update(controls.getBoolean(DriverControlsEnum.TOGGLE_PTO))){
                 if(ptoState == PTOStates.DRIVE_ENABLED){
@@ -88,16 +88,8 @@ public class Lift extends AdvancedSubsystem{
     }
 
     @Override
-    public void zeroSensors() {
+    public void onStop() {}
 
-    }
-
-    @Override
-    public void updateSmartDashboard() {
-
-    }
-
-    @Override
     public void calibrateInit() {
         leftCalibrated = false;
         rightCalibrated = false;
@@ -108,7 +100,6 @@ public class Lift extends AdvancedSubsystem{
         Drivetrain.getInstance().rightMaster.set(ControlMode.PercentOutput, 0.1);
     }
 
-    @Override
     public void calibrateLoop() {
         if(Timer.getFPGATimestamp()-calibrationStartTime > calibrationWaitDuration){
             if(!leftCalibrated && Math.abs(Drivetrain.getInstance().getSensedRPSLeft()) <= calibrationTolerance){
@@ -129,7 +120,6 @@ public class Lift extends AdvancedSubsystem{
         }
     }
 
-    @Override
     public boolean calibrateFinished() {
         return calibrationComplete;
     }

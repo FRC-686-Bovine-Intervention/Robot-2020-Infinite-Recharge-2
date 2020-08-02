@@ -7,12 +7,12 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.controllers.Subsystem;
+import frc.robot.controllers.Loop;
 import frc.robot.lib.joysticks.Controls;
 import frc.robot.subsystems.Lift.PTOStates;
 import frc.robot.subsystems.shooter.Utility;
 
-public class Drivetrain extends Subsystem{
+public class Drivetrain implements Loop {
 
     private static Drivetrain instance = null;
     public static Drivetrain getInstance(){
@@ -141,11 +141,11 @@ public class Drivetrain extends Subsystem{
     
 
     @Override
-    public void init(){}
+    public void onStart(){}
 
 
     @Override
-    public void run(){
+    public void onLoop(){
         if(SmartDashboard.getBoolean("Drivetrain/ZeroWheelPos", false)){
             leftMaster.setSelectedSensorPosition(0, Constants.kTalonPidIdx, Constants.kTalonTimeoutMs);
             rightMaster.setSelectedSensorPosition(0, Constants.kTalonPidIdx, Constants.kTalonTimeoutMs);
@@ -179,20 +179,12 @@ public class Drivetrain extends Subsystem{
     }
 
     @Override
+    public void onStop(){}
+
     public void zeroSensors() {
         leftMaster.setSelectedSensorPosition(0, Constants.kTalonPidIdx, Constants.kTalonTimeoutMs);
         rightMaster.setSelectedSensorPosition(0, Constants.kTalonPidIdx, Constants.kTalonTimeoutMs);
     }
-
-    @Override
-    public void updateSmartDashboard() {
-        SmartDashboard.putNumber("Drivetrain/InchesLeft", getSensedInchesLeft());
-        SmartDashboard.putNumber("Drivetrain/InchesRight", getSensedInchesRight());
-
-    }
-
-
-
 
     /**
      * Sets velocity of drivetrain in inches/sec
@@ -215,7 +207,6 @@ public class Drivetrain extends Subsystem{
         leftMaster.set(ControlMode.PercentOutput, leftPower);
         rightMaster.set(ControlMode.PercentOutput, rightPower);
     }
-
 
     /**
      * What up fam?
@@ -250,9 +241,6 @@ public class Drivetrain extends Subsystem{
     public double getSensedInchesRight(){
         return Utility.encoderUnitsToRadians(rightMaster.getSelectedSensorPosition(), encoderUnitsPerRevRight)*(wheelDiameter/2.0);
     }
-
-
-
 
     public class WheelSpeed {
         public double leftSpeed, rightSpeed;
