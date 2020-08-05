@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.controllers.Loop;
+import frc.robot.loops.Loop;
 import frc.robot.lib.joysticks.Controls;
 import frc.robot.lib.joysticks.DriverControlsEnum;
 import frc.robot.lib.util.RisingEdgeDetector;
@@ -90,35 +90,38 @@ public class Lift implements Loop {
     @Override
     public void onStop() {}
 
-    public void calibrateInit() {
-        leftCalibrated = false;
-        rightCalibrated = false;
-        calibrationComplete = false;
-        calibrationStartTime = Timer.getFPGATimestamp();
-        shiftToLift();
-        Drivetrain.getInstance().leftMaster.set(ControlMode.PercentOutput, 0.1);
-        Drivetrain.getInstance().rightMaster.set(ControlMode.PercentOutput, 0.1);
-    }
 
-    public void calibrateLoop() {
-        if(Timer.getFPGATimestamp()-calibrationStartTime > calibrationWaitDuration){
-            if(!leftCalibrated && Math.abs(Drivetrain.getInstance().getSensedRPSLeft()) <= calibrationTolerance){
-                leftCalibrated = true;
-                Drivetrain.getInstance().leftMaster.set(ControlMode.Velocity, 0.0);
-            }
+    //TODO:
 
-            if(!rightCalibrated && Math.abs(Drivetrain.getInstance().getSensedRPSRight()) <= calibrationTolerance){
-                rightCalibrated = true;
-                Drivetrain.getInstance().rightMaster.set(ControlMode.Velocity, 0.0);
-            }
+    // public void calibrateInit() {
+    //     leftCalibrated = false;
+    //     rightCalibrated = false;
+    //     calibrationComplete = false;
+    //     calibrationStartTime = Timer.getFPGATimestamp();
+    //     shiftToLift();
+    //     Drive.getInstance().leftMaster.set(ControlMode.PercentOutput, 0.1);
+    //     Drive.getInstance().rightMaster.set(ControlMode.PercentOutput, 0.1);
+    // }
 
-            if(leftCalibrated && rightCalibrated){
-                Drivetrain.getInstance().zeroSensors();
-                calibrationComplete = true;
-                shiftToDrive();
-            }
-        }
-    }
+    // public void calibrateLoop() {
+    //     if(Timer.getFPGATimestamp()-calibrationStartTime > calibrationWaitDuration){
+    //         if(!leftCalibrated && Math.abs(Drive.getInstance().getSensedRPSLeft()) <= calibrationTolerance){
+    //             leftCalibrated = true;
+    //             Drivetrain.getInstance().leftMaster.set(ControlMode.Velocity, 0.0);
+    //         }
+
+    //         if(!rightCalibrated && Math.abs(Drivetrain.getInstance().getSensedRPSRight()) <= calibrationTolerance){
+    //             rightCalibrated = true;
+    //             Drivetrain.getInstance().rightMaster.set(ControlMode.Velocity, 0.0);
+    //         }
+
+    //         if(leftCalibrated && rightCalibrated){
+    //             Drivetrain.getInstance().zeroSensors();
+    //             calibrationComplete = true;
+    //             shiftToDrive();
+    //         }
+    //     }
+    // }
 
     public boolean calibrateFinished() {
         return calibrationComplete;

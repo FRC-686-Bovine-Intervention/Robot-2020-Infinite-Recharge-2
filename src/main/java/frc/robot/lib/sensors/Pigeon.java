@@ -46,12 +46,6 @@ public class Pigeon extends GyroBase
                 double[] ypr = new double[kYPR_SIZE]; // yaw/pitch/roll array
                 pigeon.getYawPitchRoll(ypr); // fill array
                 double yaw = ypr[kYAW];
-
-                //Code for applying initial conditions
-                yaw += physicalStartAngle;
-                if(Math.abs(yaw) > 180){
-                        yaw = Math.copySign(360-Math.abs(yaw), -yaw);
-                }
                 return yaw;
         }
 
@@ -80,15 +74,5 @@ public class Pigeon extends GyroBase
                 pigeon.getYawPitchRoll(ypr); // fill array
                 calPitch = ypr[kPITCH];
                 calRoll = ypr[kROLL];
-        }
-
-        public void setInitCondition(double degree){
-                physicalStartAngle = degree;
-        }
-
-
-        public void zeroHeading(double startDegree){
-                zeroSensor();
-                setInitCondition(startDegree);
         }
 }

@@ -1,8 +1,10 @@
-package frc.robot.controllers;
+package frc.robot.loops;
 
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.command_status.DriveState;
+import frc.robot.command_status.RobotState;
 import frc.robot.lib.sensors.Pigeon;
-import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Drive;
 
 /**
  * Periodically estimates the state of the robot using the robot's distance
@@ -22,13 +24,13 @@ public class RobotStateLoop implements Loop
 	 }
 
     RobotState robotState;
-    Drivetrain drivetrain;
+    DriveState drive;
     Pigeon pigeon;
     
     RobotStateLoop() 
     {
         robotState = RobotState.getInstance();
-        drivetrain = Drivetrain.getInstance();
+        drive = DriveState.getInstance();
         pigeon = Pigeon.getInstance();
     }
     
@@ -37,7 +39,7 @@ public class RobotStateLoop implements Loop
     @Override
     public void onStart() 
     {
-    	robotState.setPrevEncoderDistance(drivetrain.getSensedInchesLeft(), drivetrain.getSensedInchesRight());
+    	robotState.setPrevEncoderDistance(drive.getLeftDistanceInches(), drive.getLeftDistanceInches());
     }
 
     @Override
@@ -47,10 +49,10 @@ public class RobotStateLoop implements Loop
     	// and in the same LoopController thread
     	
         double time      = Timer.getFPGATimestamp();
-        double lDistance = drivetrain.getSensedInchesLeft();
-        double rDistance = drivetrain.getSensedInchesRight();
-        double lSpeed    = drivetrain.getSensedIPS().leftSpeed;
-        double rSpeed    = drivetrain.getSensedIPS().rightSpeed;
+        double lDistance = drive.getLeftDistanceInches();
+        double rDistance = drive.getRightDistanceInches();
+        double lSpeed    = drive.getLeftSpeedInchesPerSec();
+        double rSpeed    = drive.getRightSpeedInchesPerSec();
         double gyroAngle = Math.toRadians(pigeon.getHeadingDeg()+90); //90 to handle internal errors
 
         robotState.generateOdometryFromSensors(time, lDistance, rDistance, lSpeed, rSpeed, gyroAngle);

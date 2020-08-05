@@ -1,12 +1,13 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import frc.robot.controllers.LoopController;
-import frc.robot.controllers.RobotState;
-import frc.robot.controllers.RobotStateLoop;
+import frc.robot.loops.DriveLoop;
+import frc.robot.loops.LoopController;
+import frc.robot.command_status.RobotState;
+import frc.robot.loops.RobotStateLoop;
 import frc.robot.subsystems.Camera;
 import frc.robot.subsystems.ConveyorBelt;
-import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Kickers;
 import frc.robot.subsystems.Lift;
@@ -31,7 +32,8 @@ public class Robot extends TimedRobot {
     pigeon.zeroSensor();
 
     loopController = new LoopController();
-    loopController.register(Drivetrain.getInstance());
+    loopController.register(DriveLoop.getInstance());
+    loopController.register(Drive.getInstance().getVelocityPIDLoop());
     loopController.register(ShooterMaster.getInstance());
     loopController.register(Intake.getInstance());
     loopController.register(ConveyorBelt.getInstance());

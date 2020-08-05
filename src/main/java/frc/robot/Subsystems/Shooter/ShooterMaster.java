@@ -2,11 +2,11 @@ package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.controllers.Loop;
-import frc.robot.controllers.RobotState;
+import frc.robot.loops.Loop;
+import frc.robot.command_status.RobotState;
 import frc.robot.lib.joysticks.Controls;
 import frc.robot.lib.joysticks.DriverControlsEnum;
-import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Lift;
 import frc.robot.subsystems.Lift.PTOStates;
 import frc.robot.subsystems.shooter.Limelight.LedMode;
@@ -26,35 +26,19 @@ public class ShooterMaster implements Loop {
 
     private Controls controls;
 
-    private Turret turret;
-    private Hood hood;
-    private Flywheel flywheel;
-    private Limelight limelight;
+    private Turret turret = Turret.getInstance();
+    private Hood hood = Hood.getInstance();
+    private Flywheel flywheel = Flywheel.getInstance();
+    private Limelight limelight = Limelight.getInstance();
 
-    //Decision variables =======================================
-    public class Decision{
-        public int priority, id;
-        public boolean elected = false;
-        public Decision(int id, int priority){
-            this.priority = priority;
-            this.id = id;
-        }
-        public void clear(){
-            elected = false;
-        }
-        public void vote(){
-            elected = true;
-        }
+    public enum ShooterState {
+        DEBUG,
+        CLIMBING,
+        SEARCHING,
+        SHOOTING,
+        IDLING
     }
-
-    private static final int iSearch = 1, iShoot = 2, iIdle = 3, iDebug = 4, iClimb = 5;
-    Decision debug = new Decision(iDebug, 1);
-    Decision climbing = new Decision(iDebug, 2);
-    Decision search = new Decision(iSearch, 4);
-    Decision shoot = new Decision(iShoot, 3);
-    Decision idle = new Decision(iIdle, 5);
-    Decision[] options = {search, shoot, idle, debug, climbing};
-    private Decision cDecision = idle;
+    private ShooterState cState = ShooterState.IDLING;
     
     //Search variables
     private double sweepStartTime = 0;
@@ -62,8 +46,8 @@ public class ShooterMaster implements Loop {
     private static final double sweepRange = Math.toRadians(120);
     private boolean sweepFirstRun = true;
     private double targetLossStart = 0;
-    private RisingEdgeDetector searchEdge = new RisingEdgeDetector();
-    private boolean searchEdgeBool = false;
+    private RisingEdgeDetector searchEdgeDetector = new RisingEdgeDetector();
+    private boolean searchEdge = false;
     private static final double targetLossMax = 1.5;
 
     //Shooting variables:
@@ -75,12 +59,6 @@ public class ShooterMaster implements Loop {
     private boolean calibrationComplete = false;
     
     public ShooterMaster(){
-        controls = Controls.getInstance();
-        flywheel = Flywheel.getInstance();
-        hood = Hood.getInstance();
-        turret = Turret.getInstance();
-
-        limelight = Limelight.getInstance();
         limelight.setLEDMode(LedMode.kOff);
 
         SmartDashboard.putBoolean("Shooter/Debug", false);
@@ -109,13 +87,10 @@ public class ShooterMaster implements Loop {
             sensedTargetPos = ShooterCalcs.getNewTargetPos();
             runningVariation = 0;
         }
+        
         //Averaging:
-        if(runningTargetPos == null){
-            //First time through
-            runningTargetPos = sensedTargetPos;
-        } else {
-            runningTargetPos = runningTargetPos.expAverage(sensedTargetPos, ShooterCalcs.targetSmoothing);
-        }
+        if(runningTargetPos == null) runningTargetPos = sensedTargetPos;
+        else runningTargetPos = runningTargetPos.expAverage(sensedTargetPos, ShooterCalcs.targetSmoothing);
 
         if(limelight.getIsTargetFound()){
             //Updating robot pos based on limelight sensing
@@ -126,55 +101,26 @@ public class ShooterMaster implements Loop {
         //=============================
         //Decision Making:
         //=============================
-        for(Decision option : options){
-            option.clear();
-        }
-
-        //Check conditions for each:
-        if(controls.getBoolean(DriverControlsEnum.SEARCH) || controls.getBoolean(DriverControlsEnum.SHOOT)){
-            search.vote();
-        }
-        if(controls.getBoolean(DriverControlsEnum.SHOOT) && runningVariation <= variationTolerance){
-            shoot.vote();
-        }
         if(SmartDashboard.getBoolean("Shooter/Debug", false)){
-            debug.vote();
+            cState = ShooterState.DEBUG;
+        } else if(Lift.getInstance().getPTOState() == PTOStates.LIFT_ENABLED){
+            cState = ShooterState.CLIMBING;
+        } else if(controls.getBoolean(DriverControlsEnum.SHOOT) && runningVariation <= variationTolerance){
+            cState = ShooterState.SHOOTING;
+        } else if(controls.getBoolean(DriverControlsEnum.SEARCH) || controls.getBoolean(DriverControlsEnum.SHOOT)){
+            cState = ShooterState.SEARCHING;
+        } else {
+            cState = ShooterState.IDLING;
         }
-        if(Lift.getInstance().getPTOState() == PTOStates.LIFT_ENABLED){
-            climbing.vote();
-        }
-
-        //Default:
-        idle.vote();
-
-        //Choose:
-        Decision bestOption = null;
-        for(Decision option : options){
-            if(option.elected){
-                if(bestOption == null){
-                    bestOption = option;
-                } else {
-                    bestOption = bestOption.priority < option.priority ? bestOption : option;
-                }
-            }
-        }
-        if(cDecision.id != search.id && bestOption.id == search.id){
-            sweepFirstRun = true;
-        }
-        cDecision = bestOption;
-
-        searchEdgeBool = searchEdge.update(cDecision.id == iSearch);
+        searchEdge = searchEdgeDetector.update(cState == ShooterState.SEARCHING);
 
         //====================================
         //Carrying out state behaviors:
         //====================================
-        switch(cDecision.id){
-            case iDebug:
-                if(SmartDashboard.getBoolean("Shooter/Debug/Limelight", false)){
-                    limelight.setLEDMode(LedMode.kOn);
-                } else {
-                    limelight.setLEDMode(LedMode.kOff);
-                }
+        switch(cState){
+            case DEBUG:
+                if(SmartDashboard.getBoolean("Shooter/Debug/Limelight", false)) limelight.setLEDMode(LedMode.kOn);
+                else limelight.setLEDMode(LedMode.kOff);
 
                 if(SmartDashboard.getBoolean("Shooter/Debug/Autotargeting", false) && limelight.getIsTargetFound()){
                     double cTurretPos = turret.getSensedPosition();
@@ -189,11 +135,9 @@ public class ShooterMaster implements Loop {
                 break;
 
 
-            case iSearch:
+            case SEARCHING:
                 limelight.setLEDMode(LedMode.kOn);
-                if(searchEdgeBool){
-                    targetLossStart = Timer.getFPGATimestamp();
-                }
+                if(searchEdge) targetLossStart = Timer.getFPGATimestamp();
 
                 if(!limelight.getIsTargetFound()){
                     if(Timer.getFPGATimestamp()-targetLossStart > targetLossMax){
@@ -215,50 +159,22 @@ public class ShooterMaster implements Loop {
                 }
                 break;
 
-            case iShoot:
+            case SHOOTING:
                 limelight.setLEDMode(LedMode.kOn);
                 
                 //Calculating information necessary for making shot along with applying lead
-                if(limelight.getIsTargetFound()){
-                    //Hi
-                    System.out.println("break");
-                }
-                Vector2d shooterVelocity = ShooterCalcs.calcShooterLeadVelocity(runningTargetPos, Drivetrain.getInstance().getLinearAngularSpeed());
+                //TODO: calc out velocity
+                Vector2d shooterVelocity = new Vector2d(); //ShooterCalcs.calcShooterLeadVelocity(runningTargetPos, Drivetrain.getInstance().getLinearAngularSpeed());
                 double hoodPosition = ShooterCalcs.calcHoodPosition(runningTargetPos.length());
 
                 //Respond physically
                 flywheel.setRPS(shooterVelocity.length());
                 turret.setPosition(((shooterVelocity.angle()-turret.getSensedPosition())*.99)+(turret.getSensedPosition()));
                 hood.setPosition(hoodPosition);
-
-                //Old Code:
-
-                // double targetDisplacement;
-                // if(limelight.getIsTargetFound()){
-                //     targetDisplacement = getTargetDisplacement();
-                //     lastTargetPos = targetDisplacement;
-                // } else {
-                //     targetDisplacement = lastTargetPos;
-                // }
-
-                // double cHorizRad = limelight.getTargetHorizontalAngleRad();
-                // double cTurretPos = turret.getSensedPosition();
-                // turret.setPosition(cTurretPos +cHorizRad/2.0);
-
-                // int keyRPS = getLinear(targetDisplacement, dataTable);
-                // double nominalSpeed = handleLinear(targetDisplacement, dataTable[keyRPS][0], dataTable[keyRPS+1][0], dataTable[keyRPS][1], dataTable[keyRPS+1][1]);
-
-                // int keyHood = getLinear(targetDisplacement, dataTable);
-                // double nominalPosition = handleLinear(targetDisplacement, dataTable[keyHood][0], dataTable[keyHood+1][0], dataTable[keyHood][1], dataTable[keyHood+1][1]);
-
-                // flywheel.setRPS(nominalSpeed/9.5493);
-                // hood.setPosition(Math.toRadians(nominalPosition));
                 break;
 
-
-
-            case iIdle:
-            case iClimb:
+            case CLIMBING:
+            case IDLING:
                 limelight.setLEDMode(LedMode.kOff);
                 turret.setPosition(0.0);
                 hood.setPosition(0.0);

@@ -5,7 +5,7 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.controllers.Loop;
+import frc.robot.loops.Loop;
 import frc.robot.lib.joysticks.Controls;
 import frc.robot.lib.joysticks.DriverControlsEnum;
 import frc.robot.lib.util.FallingEdgeDetector;

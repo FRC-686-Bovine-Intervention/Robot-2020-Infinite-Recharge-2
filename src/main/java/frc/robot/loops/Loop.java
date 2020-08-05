@@ -1,4 +1,4 @@
-package frc.robot.controllers;
+package frc.robot.loops;
 
 /**
  * Attribution: adapted from FRC Team 254

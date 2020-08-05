@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
-import frc.robot.controllers.Loop;
+import frc.robot.loops.Loop;
 import frc.robot.lib.joysticks.Controls;
 import frc.robot.lib.joysticks.DriverControlsEnum;
 
