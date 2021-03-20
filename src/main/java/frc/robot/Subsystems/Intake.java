@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.sql.Driver;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
@@ -7,9 +9,11 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
+import frc.robot.lib.joystick.DriverControlsBase;
+import frc.robot.lib.joystick.DriverControlsEnum;
+import frc.robot.lib.joystick.SelectedDriverControls;
+import frc.robot.lib.util.RisingEdgeDetector;
 import frc.robot.loops.Loop;
-import frc.robot.lib.joysticks.Controls;
-import frc.robot.lib.joysticks.DriverControlsEnum;
 
 public class Intake implements Loop{
     private static Intake instance = null;
@@ -20,7 +24,7 @@ public class Intake implements Loop{
         return instance;
     }
 
-    private Controls controls;
+    private DriverControlsBase controls;
 
     private TalonSRX intakeMotor;
     private DoubleSolenoid mainSolenoids, secondarySolenoids;
@@ -29,8 +33,11 @@ public class Intake implements Loop{
     private double reverseTime = 0.25;
     private double reverseStartTime = -1;
 
+    private RisingEdgeDetector toggleDetector = new RisingEdgeDetector();
+    private boolean deployed = false;
+
     public Intake(){
-        controls = Controls.getInstance();
+        controls = SelectedDriverControls.getInstance().get();
 
         intakeMotor = new TalonSRX(Constants.kIntakeTalonId);
         intakeMotor.configFactoryDefault();
@@ -46,9 +53,13 @@ public class Intake implements Loop{
 
     @Override
     public void onLoop(){
+        controls = SelectedDriverControls.getInstance().get();
         double reverseElapsedTime = Timer.getFPGATimestamp()-reverseStartTime;
 
-        if(controls.getBoolean(DriverControlsEnum.INTAKE)){
+        if(toggleDetector.update(controls.getBoolean(DriverControlsEnum.INTAKE_TOGGLE))){
+            deployed = !deployed;
+        }
+        if(deployed){
             deploy();
             if(reverseElapsedTime < reverseTime){
                 setIntakePower(-Constants.kIntakePower);

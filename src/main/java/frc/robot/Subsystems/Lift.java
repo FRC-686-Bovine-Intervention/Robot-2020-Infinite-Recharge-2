@@ -1,15 +1,13 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.loops.Loop;
-import frc.robot.lib.joysticks.Controls;
-import frc.robot.lib.joysticks.DriverControlsEnum;
+import frc.robot.lib.joystick.DriverControlsBase;
+import frc.robot.lib.joystick.DriverControlsEnum;
+import frc.robot.lib.joystick.SelectedDriverControls;
 import frc.robot.lib.util.RisingEdgeDetector;
+import frc.robot.loops.Loop;
 
 public class Lift implements Loop {
     private static Lift instance = null;
@@ -21,7 +19,7 @@ public class Lift implements Loop {
         return instance;
     }
 
-    private Controls controls;
+    private DriverControlsBase controls;
 
     private Solenoid ptoSolenoids, lockSolenoids; 
 
@@ -45,9 +43,8 @@ public class Lift implements Loop {
     private double calibrationStartTime = 0;
     private static final double calibrationWaitDuration = 0.25; 
 
-
     public Lift(){
-        controls = Controls.getInstance();
+        controls = SelectedDriverControls.getInstance().get();
 
         ptoSolenoids = new Solenoid(Constants.kPCMID, Constants.kPTOSolenoidChannel);
         lockSolenoids = new Solenoid(Constants.kPCMID, Constants.kLiftLockSolenoidChannel);
@@ -56,7 +53,6 @@ public class Lift implements Loop {
         SmartDashboard.putBoolean("Lift/Debug/LockSolenoids", false);
         SmartDashboard.putBoolean("Lift/Debug/PTOSolenoids", false);
     }
-
 
     @Override
     public void onStart(){

@@ -4,12 +4,13 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.loops.Loop;
 import frc.robot.command_status.RobotState;
-import frc.robot.lib.joysticks.Controls;
-import frc.robot.lib.joysticks.DriverControlsEnum;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Lift;
 import frc.robot.subsystems.Lift.PTOStates;
 import frc.robot.subsystems.shooter.Limelight.LedMode;
+import frc.robot.lib.joystick.DriverControlsBase;
+import frc.robot.lib.joystick.DriverControlsEnum;
+import frc.robot.lib.joystick.SelectedDriverControls;
 import frc.robot.lib.sensors.Pigeon;
 import frc.robot.lib.util.Pose;
 import frc.robot.lib.util.RisingEdgeDetector;
@@ -24,7 +25,7 @@ public class ShooterMaster implements Loop {
         return instance;
     }
 
-    private Controls controls;
+    private DriverControlsBase controls = SelectedDriverControls.getInstance().get();
 
     private Turret turret = Turret.getInstance();
     private Hood hood = Hood.getInstance();

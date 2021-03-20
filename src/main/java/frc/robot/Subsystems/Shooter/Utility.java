@@ -33,18 +33,13 @@ public class Utility {
     public static int rpspsToUPFPF(double rpsps, double encoderUnitsPerRev){
         return (int)(rpsps*(encoderUnitsPerRev/(Math.PI*2.0))*(Constants.kTalonLoopPeriodSec*Constants.kTalonLoopPeriodSec));
     }
-
-
-
-
-
     
-    public static double encoderUnitsToRadians(int encoderUnits, double encoderUnitsPerRev){
-        return ((double)encoderUnits*((Math.PI*2.0)/encoderUnitsPerRev));
+    public static double encoderUnitsToRadians(double encoderUnits, double encoderUnitsPerRev){
+        return (encoderUnits*((Math.PI*2.0)/encoderUnitsPerRev));
     }
 
-    public static double upfToRPS(int UPF, double encoderUnitsPerRev){
-        return ((double)UPF*((Math.PI*2.0)/encoderUnitsPerRev)*(1.0/Constants.kTalonLoopPeriodSec));
+    public static double upfToRPS(double UPF, double encoderUnitsPerRev){
+        return (UPF*((Math.PI*2.0)/encoderUnitsPerRev)*(1.0/Constants.kTalonLoopPeriodSec));
     }
 
     public static double upfpfToRPSPS(int upfpf, double encoderUnitsPerRev){

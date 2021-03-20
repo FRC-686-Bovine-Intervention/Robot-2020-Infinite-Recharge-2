@@ -1,8 +1,9 @@
-package frc.robot.lib.joysticks;
+package frc.robot.lib.joystick;
 
-public class Thrustmaster {
-    private Thrustmaster(){}
+import frc.robot.lib.util.DataLogger;
 
+public class Thrustmaster extends JoystickBase
+{
     public static int kXAxis =              0;
     public static int kYAxis =              1;
     public static int kZRotateAxis =        2;
@@ -28,4 +29,33 @@ public class Thrustmaster {
     public static int kBottomButton6 =      16;
     
     public int port;
+
+    // constructor
+    public Thrustmaster(int _port)
+    {
+        super(_port);
+        port = _port;
+    }
+
+    public DataLogger getLogger() { return logger; }
+    
+	private final DataLogger logger = new DataLogger()
+    {
+        @Override
+        public void log()
+        {
+            String name = "Thrustmaster" + port + "/";
+            put(name + "xAxis", getAxis(kXAxis));
+            put(name + "yAxis", getAxis(kYAxis));
+            put(name + "zAxis", getAxis(kZRotateAxis));
+            put(name + "sliderAxis", getAxis(kSliderAxis));
+            int buttons = 0;
+            for (int button=1; button<=16; button++)
+            {
+                buttons |= (getButton(button) ? 1 : 0) << (button-1);
+            }
+            put(name + "buttons", buttons);
+            put(name + "pov", getPOV());
+        }
+    };
 }

@@ -6,8 +6,9 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.loops.Loop;
-import frc.robot.lib.joysticks.Controls;
-import frc.robot.lib.joysticks.DriverControlsEnum;
+import frc.robot.lib.joystick.DriverControlsBase;
+import frc.robot.lib.joystick.DriverControlsEnum;
+import frc.robot.lib.joystick.SelectedDriverControls;
 import frc.robot.lib.util.FallingEdgeDetector;
 import frc.robot.lib.util.RisingEdgeDetector;
 
@@ -20,7 +21,7 @@ public class Kickers implements Loop {
         return instance;
     }
 
-    private Controls controls;
+    private DriverControlsBase controls;
 
     private VictorSPX kickerMaster, kickerSlave;
 
@@ -29,7 +30,7 @@ public class Kickers implements Loop {
 
 
     public Kickers(){
-        controls = Controls.getInstance();
+        controls = SelectedDriverControls.getInstance().get();
 
         kickerMaster = new VictorSPX(Constants.kConveyorKickerMasterID);
         kickerSlave = new VictorSPX(Constants.kConveyorKickerSlaveID);

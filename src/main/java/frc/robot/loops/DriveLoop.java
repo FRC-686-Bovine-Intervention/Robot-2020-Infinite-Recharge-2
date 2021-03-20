@@ -65,7 +65,6 @@ public class DriveLoop implements Loop
 
     public static int kDriveTrainCurrentLimit = 25;
 
-
 	// Wheels
 	public static double kDriveWheelCircumInches    = 18.800;
 	public static double kTrackLengthInches         = 17.500;
@@ -292,8 +291,8 @@ public class DriveLoop implements Loop
 			driveState.setLeftDistanceInches(  encoderUnitsToInches( lMotorMaster.getSelectedSensorPosition( Constants.kTalonPidIdx ) ));
 			driveState.setRightDistanceInches( encoderUnitsToInches( rMotorMaster.getSelectedSensorPosition( Constants.kTalonPidIdx ) ));
 	
-			driveState.setLeftSpeedInchesPerSec(  encoderUnitsPerFrameToInchesPerSecond( lMotorMaster.getSelectedSensorVelocity(  Constants.kTalonPidIdx  ) ));
-			driveState.setRightSpeedInchesPerSec( encoderUnitsPerFrameToInchesPerSecond( rMotorMaster.getSelectedSensorVelocity(  Constants.kTalonPidIdx  ) ));
+			driveState.setLeftSpeedInchesPerSec(  encoderUnitsPerFrameToInchesPerSecond( (int) lMotorMaster.getSelectedSensorVelocity(  Constants.kTalonPidIdx  ) ));
+			driveState.setRightSpeedInchesPerSec( encoderUnitsPerFrameToInchesPerSecond( (int) rMotorMaster.getSelectedSensorVelocity(  Constants.kTalonPidIdx  ) ));
 				
 			/*
 			 * measured angle decreases with clockwise rotation
@@ -304,7 +303,7 @@ public class DriveLoop implements Loop
 			driveState.setHeadingDeg( gyro.getHeadingDeg() );
 	
 			driveState.setMotorCurrent(lMotorMaster.getStatorCurrent(), rMotorMaster.getStatorCurrent());
-			driveState.setMotorPIDError(lMotorMaster.getClosedLoopError( Constants.kTalonPidIdx ), rMotorMaster.getClosedLoopError( Constants.kTalonPidIdx ) );
+			driveState.setMotorPIDError( (int) lMotorMaster.getClosedLoopError( Constants.kTalonPidIdx ), (int) rMotorMaster.getClosedLoopError( Constants.kTalonPidIdx ) );
 	
 	        switch (driveState.getTalonControlMode())
 	        {
@@ -440,7 +439,7 @@ public class DriveLoop implements Loop
 	}
 
 	// Talon SRX reports position in rotations while in closed-loop Position mode
-	public static double encoderUnitsToInches(int _encoderPosition) {	return (double)_encoderPosition / (double)kQuadEncoderUnitsPerRev  * kDriveWheelCircumInches; }
+	public static double encoderUnitsToInches(double _encoderPosition) {	return _encoderPosition / (double)kQuadEncoderUnitsPerRev  * kDriveWheelCircumInches; }
 	public static int inchesToEncoderUnits(double _inches) { return (int)(_inches / kDriveWheelCircumInches * kQuadEncoderUnitsPerRev); }
 
 	// Talon SRX reports speed in RPM while in closed-loop Speed mode

@@ -1,9 +1,12 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import frc.robot.command_status.DriveCommand;
+import frc.robot.command_status.RobotState;
+import frc.robot.lib.joystick.SelectedDriverControls;
+import frc.robot.lib.sensors.Pigeon;
 import frc.robot.loops.DriveLoop;
 import frc.robot.loops.LoopController;
-import frc.robot.command_status.RobotState;
 import frc.robot.loops.RobotStateLoop;
 import frc.robot.subsystems.Camera;
 import frc.robot.subsystems.ConveyorBelt;
@@ -14,14 +17,11 @@ import frc.robot.subsystems.Lift;
 import frc.robot.subsystems.shooter.Limelight;
 import frc.robot.subsystems.shooter.Limelight.LedMode;
 import frc.robot.subsystems.shooter.ShooterMaster;
-import frc.robot.subsystems.shooter.Turret;
-import frc.robot.lib.sensors.Pigeon;
-
-// This is a demo comment
 
 public class Robot extends TimedRobot {
   LoopController loopController;
   Pigeon pigeon = Pigeon.getInstance();
+  SmartDashboardInteractions smartDashboard = SmartDashboardInteractions.getInstance();
 
   @Override
   public void disabledInit() {
@@ -35,17 +35,19 @@ public class Robot extends TimedRobot {
     loopController = new LoopController();
     loopController.register(DriveLoop.getInstance());
     loopController.register(Drive.getInstance().getVelocityPIDLoop());
-    loopController.register(ShooterMaster.getInstance());
-    loopController.register(Intake.getInstance());
-    loopController.register(ConveyorBelt.getInstance());
-    loopController.register(Camera.getInstance());
-    loopController.register(Kickers.getInstance());
-    loopController.register(Lift.getInstance());
-    loopController.register(RobotStateLoop.getInstance());
+    // loopController.register(ShooterMaster.getInstance());
+    // loopController.register(Intake.getInstance());
+    // loopController.register(ConveyorBelt.getInstance());
+    // loopController.register(Camera.getInstance());
+    // loopController.register(Kickers.getInstance());
+    // loopController.register(Lift.getInstance());
+    // loopController.register(RobotStateLoop.getInstance());
     loopController.start();
 
     //Move to auto!================================================================
     RobotState.getInstance().reset(FieldDimensions.middleStartPose);
+    SelectedDriverControls.getInstance().setDriverControls( SmartDashboardInteractions.getInstance().getDriverControlsSelection() );
+
   }
 
   @Override
@@ -58,10 +60,16 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {}
 
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    loopController.start();
+  }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    // Drive.getInstance().setOpenLoop(SelectedDriverControls.getInstance().getDriveCommand());
+    loopController.run();
+    Drive.getInstance().setCommand(new DriveCommand(0.5, 0.5));
+  }
 
   @Override
   public void testPeriodic() {}

@@ -9,9 +9,10 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.loops.Loop;
-import frc.robot.lib.joysticks.Controls;
-import frc.robot.lib.joysticks.DriverControlsEnum;
 import frc.robot.subsystems.shooter.ShooterMaster;
+import frc.robot.lib.joystick.DriverControlsBase;
+import frc.robot.lib.joystick.DriverControlsEnum;
+import frc.robot.lib.joystick.SelectedDriverControls;
 import frc.robot.lib.util.RisingEdgeDetector;
 
 public class ConveyorBelt implements Loop {
@@ -24,7 +25,7 @@ public class ConveyorBelt implements Loop {
         return instance;
     }
 
-    private Controls controls;
+    private DriverControlsBase controls;
 
     private VictorSPX towerMaster, towerSlave, vBeltRight;
     public TalonSRX vBeltLeft;
@@ -41,8 +42,6 @@ public class ConveyorBelt implements Loop {
     private int storageCount = 0;
 
     public ConveyorBelt() {
-        controls = Controls.getInstance();
-
         entranceSensor = new DigitalInput(Constants.kEntranceProximityID);
         exitSensor = new DigitalInput(Constants.kExitProximityID);
 
@@ -75,6 +74,7 @@ public class ConveyorBelt implements Loop {
 
     @Override
     public void onLoop() {
+        controls = SelectedDriverControls.getInstance().get();
         if (!SmartDashboard.getBoolean("Conveyorbelt/Debug", false)) {
             if (controls.getBoolean(DriverControlsEnum.REVERSE_BELTS)) {
                 reverseTower();
