@@ -91,7 +91,7 @@ public class LoopController
 
     public synchronized void run() 
     {
-        if (!running_) 
+        if (running_) 
         {
         	// lock during access to loop_ to avoid corruption from multiple threads
             synchronized (taskRunningLock_) 

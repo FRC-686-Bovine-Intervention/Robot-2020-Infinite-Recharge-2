@@ -36,7 +36,7 @@ public class Robot extends TimedRobot {
     loopController.register(DriveLoop.getInstance());
     loopController.register(Drive.getInstance().getVelocityPIDLoop());
     // loopController.register(ShooterMaster.getInstance());
-    // loopController.register(Intake.getInstance());
+    loopController.register(Intake.getInstance());
     // loopController.register(ConveyorBelt.getInstance());
     // loopController.register(Camera.getInstance());
     // loopController.register(Kickers.getInstance());
@@ -66,9 +66,11 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
+    // TODO: I'm not sure which of the two line below is correct, but I'm fairly certain that the second will work (I can't test rn)
     // Drive.getInstance().setOpenLoop(SelectedDriverControls.getInstance().getDriveCommand());
+    Drive.getInstance().setCommand(SelectedDriverControls.getInstance().getDriveCommand());
     loopController.run();
-    Drive.getInstance().setCommand(new DriveCommand(0.5, 0.5));
+
   }
 
   @Override

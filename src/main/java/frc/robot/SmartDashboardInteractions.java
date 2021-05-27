@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.lib.joystick.DriverControlsBase;
+import frc.robot.lib.joystick.DriverControlsMadcatz;
 import frc.robot.lib.joystick.DriverControlsThrustmaster;
 import frc.robot.lib.util.Pose;
 
@@ -129,7 +130,7 @@ public class SmartDashboardInteractions
         //     return new DriverControlsReversibleThrustmaster();
         
         default:
-            return new DriverControlsThrustmaster();
+            return new DriverControlsMadcatz();
 
         }
     }

@@ -91,7 +91,7 @@ public class Constants {
     // Gyro
     public enum GyroSelectionEnum { BNO055, NAVX, PIGEON; }
     //public static GyroSelectionEnum GyroSelection = GyroSelectionEnum.BNO055;
-    public static GyroSelectionEnum GyroSelection = GyroSelectionEnum.NAVX;
+    public static GyroSelectionEnum GyroSelection = GyroSelectionEnum.PIGEON;
     // public static GyroSelectionEnum GyroSelection = GyroSelectionEnum.PIGEON;
 
 
