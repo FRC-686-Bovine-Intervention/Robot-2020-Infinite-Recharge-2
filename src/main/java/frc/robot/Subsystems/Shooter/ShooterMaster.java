@@ -163,15 +163,25 @@ public class ShooterMaster implements Loop {
             case SHOOTING:
                 limelight.setLEDMode(LedMode.kOn);
                 
+                // Commenting code below for sake of quickfix
                 //Calculating information necessary for making shot along with applying lead
-                //TODO: calc out velocity
-                Vector2d shooterVelocity = new Vector2d(); //ShooterCalcs.calcShooterLeadVelocity(runningTargetPos, Drivetrain.getInstance().getLinearAngularSpeed());
-                double hoodPosition = ShooterCalcs.calcHoodPosition(runningTargetPos.length());
+                // TODO: calc out velocity
+                // Vector2d shooterVelocity = new Vector2d(); //ShooterCalcs.calcShooterLeadVelocity(runningTargetPos, Drivetrain.getInstance().getLinearAngularSpeed());
+                // double hoodPosition = ShooterCalcs.calcHoodPosition(runningTargetPos.length());
 
-                //Respond physically
-                flywheel.setRPS(shooterVelocity.length());
-                turret.setPosition(((shooterVelocity.angle()-turret.getSensedPosition())*.99)+(turret.getSensedPosition()));
-                hood.setPosition(hoodPosition);
+                // //Respond physically
+                // flywheel.setRPS(shooterVelocity.length());
+                // turret.setPosition(((shooterVelocity.angle()-turret.getSensedPosition())*.99)+(turret.getSensedPosition()));
+                // hood.setPosition(hoodPosition);
+
+                double distance = ShooterCalcs.getTargetDisplacement().length();
+                double hoodPos = ShooterCalcs.calcHoodPosition(distance);
+                double flyWheelRPS = ShooterCalcs.calcShooterVelocity(distance);
+
+                hood.setPosition(hoodPos);
+                flywheel.setRPS(flyWheelRPS);
+                turret.setPosition((limelight.getTargetHorizontalAngleRad()/2.0)+turret.getSensedPosition());
+
                 break;
 
             case CLIMBING:

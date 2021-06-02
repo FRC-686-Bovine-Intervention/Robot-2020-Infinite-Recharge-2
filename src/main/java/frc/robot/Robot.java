@@ -35,11 +35,11 @@ public class Robot extends TimedRobot {
     loopController = new LoopController();
     loopController.register(DriveLoop.getInstance());
     loopController.register(Drive.getInstance().getVelocityPIDLoop());
-    // loopController.register(ShooterMaster.getInstance());
+    loopController.register(ShooterMaster.getInstance());
     loopController.register(Intake.getInstance());
-    // loopController.register(ConveyorBelt.getInstance());
+    loopController.register(ConveyorBelt.getInstance());
     // loopController.register(Camera.getInstance());
-    // loopController.register(Kickers.getInstance());
+    loopController.register(Kickers.getInstance());
     // loopController.register(Lift.getInstance());
     // loopController.register(RobotStateLoop.getInstance());
     loopController.start();

@@ -71,7 +71,7 @@ public class DriverControlsMadcatz extends DriverControlsBase
         {
             case SHOOT:                         return controller.getButton(Madcatz.kAButton);
             // case DRIVE_ASSIST:                  return controller.getButton();
-            // case INTAKE_TOGGLE:                 return controller.getButton();
+            case INTAKE_TOGGLE:                 return controller.getButton(Madcatz.kBButton);
             // case INTAKE_STORED:                 return controller.getButton();
             // case LOCK_LIFT:                     return controller.getButton();
             // case UNLOCK_LIFT:                   return controller.getButton();

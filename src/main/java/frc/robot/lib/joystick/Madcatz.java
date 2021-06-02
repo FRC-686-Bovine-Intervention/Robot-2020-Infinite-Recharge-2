@@ -9,6 +9,8 @@ public class Madcatz extends JoystickBase
     public static int kRightXAxis =             4;
     public static int kRightYAxis =             5;
     public static int kAButton =                0;
+    // TODO: check BButton
+    public static int kBButton =                1;
 
     public int port;
 
