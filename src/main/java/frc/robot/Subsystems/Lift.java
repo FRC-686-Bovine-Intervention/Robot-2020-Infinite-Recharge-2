@@ -48,6 +48,9 @@ public class Lift implements Loop {
 
         ptoSolenoids = new Solenoid(Constants.kPCMID, Constants.kPTOSolenoidChannel);
         lockSolenoids = new Solenoid(Constants.kPCMID, Constants.kLiftLockSolenoidChannel);
+        
+        shiftToDrive();
+        lockLift();
 
         SmartDashboard.putBoolean("Lift/Debug", false);
         SmartDashboard.putBoolean("Lift/Debug/LockSolenoids", false);
@@ -61,26 +64,28 @@ public class Lift implements Loop {
 
     @Override
     public void onLoop(){
-        if(!SmartDashboard.getBoolean("Lift/Debug", false)){
-            if(ptoEdge.update(controls.getBoolean(DriverControlsEnum.TOGGLE_PTO))){
-                if(ptoState == PTOStates.DRIVE_ENABLED){
-                    shiftToLift();
-                } else {
-                    shiftToDrive();
-                }
-            }
+        // TODO: until further notice ...
 
-            if(controls.getBoolean(DriverControlsEnum.LOCK_LIFT)){
-                lockLift();
-                shiftToDrive();
-            } else if(controls.getBoolean(DriverControlsEnum.UNLOCK_LIFT)){
-                unlockLift();
-            }
-        } else {
-            //Debug stuff
-            lockSolenoids.set(SmartDashboard.getBoolean("Lift/Debug/LockSolenoids", false));
-            ptoSolenoids.set(SmartDashboard.getBoolean("Lift/Debug/PTOSolenoids", false));
-        }
+        // if(!SmartDashboard.getBoolean("Lift/Debug", false)){
+        //     if(ptoEdge.update(controls.getBoolean(DriverControlsEnum.TOGGLE_PTO))){
+        //         if(ptoState == PTOStates.DRIVE_ENABLED){
+        //             shiftToLift();
+        //         } else {
+        //             shiftToDrive();
+        //         }
+        //     }
+
+        //     if(controls.getBoolean(DriverControlsEnum.LOCK_LIFT)){
+        //         lockLift();
+        //         shiftToDrive();
+        //     } else if(controls.getBoolean(DriverControlsEnum.UNLOCK_LIFT)){
+        //         unlockLift();
+        //     }
+        // } else {
+        //     //Debug stuff
+        //     lockSolenoids.set(SmartDashboard.getBoolean("Lift/Debug/LockSolenoids", false));
+        //     ptoSolenoids.set(SmartDashboard.getBoolean("Lift/Debug/PTOSolenoids", false));
+        // }
     }
 
     @Override

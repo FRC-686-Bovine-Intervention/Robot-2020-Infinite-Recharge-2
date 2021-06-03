@@ -16,7 +16,7 @@ public class ShooterCalcs {
 
     public static double[][] dataTable = {
         {0, 4500,0},
-        {61, 2300,27},
+        {61, 2300,22},
         {134,3337,47},
         {241,3500,47},
         {365,3960,47}

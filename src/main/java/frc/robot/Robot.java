@@ -40,7 +40,7 @@ public class Robot extends TimedRobot {
     loopController.register(ConveyorBelt.getInstance());
     // loopController.register(Camera.getInstance());
     loopController.register(Kickers.getInstance());
-    // loopController.register(Lift.getInstance());
+    loopController.register(Lift.getInstance());
     // loopController.register(RobotStateLoop.getInstance());
     loopController.start();
 
@@ -74,5 +74,7 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    Limelight.getInstance().setLEDMode(LedMode.kOn);
+  }
 }

@@ -3,6 +3,7 @@ package frc.robot.subsystems.shooter;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.loops.Loop;
+import frc.robot.SmartDashboardInteractions;
 import frc.robot.command_status.RobotState;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Lift;
@@ -75,6 +76,8 @@ public class ShooterMaster implements Loop {
 
     @Override
     public void onLoop(){
+        SmartDashboard.putNumber("Shooter/Debug/SensedDistance", ShooterCalcs.getTargetDisplacement().length());
+
         //===========================
         //Target tracking:
         //===========================

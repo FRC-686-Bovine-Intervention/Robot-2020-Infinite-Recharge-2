@@ -62,6 +62,9 @@ public class ConveyorBelt implements Loop {
 
         towerSlave.follow(towerMaster);
 
+        stopTower();
+        stopVBelt();
+
         SmartDashboard.putBoolean("Conveyorbelt/Debug", false);
         SmartDashboard.putNumber("Conveyorbelt/Debug/SetTowerPercent", 0);
         SmartDashboard.putNumber("Conveyorbelt/Debug/SetLeftVPercent", 0);
@@ -122,7 +125,10 @@ public class ConveyorBelt implements Loop {
     }
 
     @Override
-    public void onStop(){}
+    public void onStop(){
+        stopTower();
+        stopVBelt();
+    }
 
     public void feed() {
         turnOnTower();

@@ -62,6 +62,8 @@ public class Turret {
 
         turretMotor.configMotionCruiseVelocity(cruiseVelocity, Constants.kTalonTimeoutMs);
         turretMotor.configMotionAcceleration(maxAcceleration, Constants.kTalonTimeoutMs);
+        
+        turretMotor.setSelectedSensorPosition(0);
     }
 
 

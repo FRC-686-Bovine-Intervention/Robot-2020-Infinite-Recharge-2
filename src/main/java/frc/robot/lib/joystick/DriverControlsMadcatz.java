@@ -24,6 +24,7 @@ public class DriverControlsMadcatz extends DriverControlsBase
     
     // Joystick Port Constants
     public static int kControllerPort = 0;
+    public static double kMaxSpeedPercent = 0.5;
 
     public static JoystickBase controller;
 
@@ -47,8 +48,8 @@ public class DriverControlsMadcatz extends DriverControlsBase
 
     public DriveCommand getDriveCommand() 
     {
-        double throttle = -controller.getAxis(Madcatz.kLeftYAxis); 
-        double turn =     -controller.getAxis(Madcatz.kLeftXAxis);
+        double throttle = -controller.getAxis(Madcatz.kLeftYAxis)*kMaxSpeedPercent; 
+        double turn =     -controller.getAxis(Madcatz.kLeftXAxis)*kMaxSpeedPercent;
         
         //'Turning' is reversed for lift
         if(Lift.getInstance().getPTOState() == PTOStates.LIFT_ENABLED){
